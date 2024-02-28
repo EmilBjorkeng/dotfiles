@@ -2,75 +2,90 @@
 
 cd "$(dirname "${BASH_SOURCE}")";
 
-git pull origin main
+if [ $# -eq 0 -o "$1" != "--no-git" ]; then
+    git pull origin main
+fi
 
-echo '1) Linux minimal (gitconfig)'
-echo '2) Arch Linux (Minimal[1], bashrc+)'
-echo '3) Arch Hyprland (Arch[2], hypr, waybar, alacritty, fuzzel)'
-read -p "Enter a selection (default=1): " sel
+echo '1) Minimal (gitconfig)'
+echo '2) Base Install (Minimal, yay, bashrc+)'
+echo '3) Hyprland (Base Install, hypr, waybar, alacritty, fuzzel)'
+read -p "Enter a selection (default=2): " sel
 echo ''
 
+minimal () { 
+    if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
+        echo '.gitconfig linked'
+    fi
+}
+
+base () {
+	if ln -s ~/.dotfiles/.bashrc ~/.bashrc; then
+        echo '.bashrc linked'
+    fi
+	if ln -s ~/.dotfiles/.bash_commands ~/.bash_commands; then
+        echo '.bash_commands linked'
+    fi
+	if ln -s ~/.dotfiles/.bash_aliases ~/.bash_aliases; then
+        echo '.bash_aliases linked'
+    fi
+}
+
+yay () {
+    echo 'Installing yay...'
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -si
+    cd "$(dirname "${BASH_SOURCE}")";
+    sudo rm -r yay
+}
+
+hypr () {
+    if ln -s ~/.dotfiles/hypr/ ~/.config/; then
+        echo '.config/hypr/ linked'
+    fi
+	if ln -s ~/.dotfiles/waybar/ ~/.config/; then
+        echo '.config/waybar/ linked'
+    fi
+	if ln -s ~/.dotfiles/alacritty/ ~/.config/; then
+        echo '.config/alacritty/ linked'
+    fi
+    if ln -s ~/.dotfiles/fuzzel/ ~/.config/; then
+        echo '.config/fuzzel/ linked'
+    fi
+}
+
 case $sel in
-    # Linux minimal
-	"1" | "" )
+    # Minimal
+	"1" )
         echo 'Creating symlinks...'
-		if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
-            echo '.gitconfig linked'
-        fi
+        minimal
 
         echo ''
         echo 'Symlinks created' ;;
-    # Arch Linux
-	"2" )
-        echo 'Creating symlinks...'
-		if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
-            echo '.gitconfig linked'
-        fi
-		if ln -s ~/.dotfiles/.bashrc ~/.bashrc; then
-            echo '.bashrc linked'
-        fi
-		if ln -s ~/.dotfiles/.bash_commands ~/.bash_commands; then
-            echo '.bash_commands linked'
-        fi
-		if ln -s ~/.dotfiles/.bash_aliases ~/.bash_aliases; then
-            echo '.bash_aliases linked'
-        fi
+    # Base Install
+	"2" | "" )
+        echo 'Installing software...'
+        yay
         
         echo ''
+        echo 'Creating symlinks...'
+        minimal
+        base
+
+        echo ''
         echo 'Symlinks created' ;;
-    # Arch Hyprland
+    # Hyprland
 	"3" )
         echo 'Installing software...'
         sudo pacman -S hyprland waybar alacritty fuzzel --needed
-        echo 'Software installed'
-        echo ''
-
-        echo 'Creating symlinks...'
-		if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
-            echo '.gitconfig linked'
-        fi
-		if ln -s ~/.dotfiles/.bashrc ~/.bashrc; then
-            echo '.bashrc linked'
-        fi
-        if ln -s ~/.dotfiles/.bash_commands ~/.bash_commands; then
-            echo '.bash_commands linked'
-        fi
-        if ln -s ~/.dotfiles/.bash_aliases ~/.bash_aliases; then
-            echo '.bash_aliases linked'
-        fi
-		if ln -s ~/.dotfiles/hypr/ ~/.config/; then
-            echo '.config/hypr/ linked'
-        fi
-		if ln -s ~/.dotfiles/waybar/ ~/.config/; then
-            echo '.config/waybar/ linked'
-        fi
-		if ln -s ~/.dotfiles/alacritty/ ~/.config/; then
-            echo '.config/alacritty/ linked'
-        fi
-        if ln -s ~/.dotfiles/fuzzel/ ~/.config/; then
-            echo '.config/fuzzel/ linked'
-        fi
+        yay
         
+        echo ''
+        echo 'Creating symlinks...'
+		minimal
+		base
+        hypr
+
         echo ''
         echo 'Symlinks created' ;;
 	* )
