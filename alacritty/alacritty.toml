@@ -1,0 +1,98 @@
+shell = "/bin/bash"
+working_directory = "None"
+live_config_reload = true
+ipc_socket = true
+
+[window]
+dimensions = { columns = 0, lines = 0 }
+padding = { x = 6, y = 6 }
+dynamic_padding = false
+decorations = "None"
+opacity = 1.0
+blur = false
+title = "Alacritty"
+dynamic_title = true
+class = { instance = "Alacritty", general = "Alacritty" }
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[font]
+normal      = { family = "Fira Mono", style = "Regular" }
+bold        = { family = "Fira Mono", style = "Bold" }
+italic      = { family = "Fira Mono", style = "Italic" }
+bold_italic = { family = "Fira Mono", style = "Bold Italic" }
+size = 11.5
+offset = { x = 0, y = 0 }
+
+[colors]
+primary.foreground        = "#d8d8d8"
+primary.background        = "#181818"
+primary.dim_foreground    = "#828482"
+primary.bright_foreground = "None"
+
+cursor         = { text = "CellBackground", cursor = "CellForeground" }
+vi_mode_cursor = { text = "CellBackground", cursor = "CellForeground" }
+
+search.matches       = { foreground = "#181818", background = "#ac4242" }
+search.focused_match = { foreground = "#181818", background = "#f4bf75" }
+
+hints.start = { foreground = "#181818", background = "#f4bf75" }
+hints.end   = { foreground = "#181818", background = "#ac4242" }
+
+line_indicator = { foreground = "None", background = "None" }
+footer_bar     = { foreground = "#181818", background = "#d8d8d8" }
+selection      = { text = "CellBackground", background = "CellForeground" }
+
+indexed_colors = []
+transparent_background_colors = false
+draw_bold_text_with_bright_colors = false
+
+[colors.normal]
+black   = "#181818"
+red     = "#ac4242"
+green   = "#90a959"
+yellow  = "#f4bf75"
+blue    = "#6a9fb5"
+magenta = "#aa759f"
+cyan    = "#75b5aa"
+white   = "#d8d8d8"
+
+[colors.bright]
+black   = "#6b6b6b"
+red     = "#c55555"
+green   = "#aac474"
+yellow  = "#feca88"
+blue    = "#82b8c8"
+magenta = "#c28cb8"
+cyan    = "#93d3c3"
+white   = "#f8f8f8"
+
+[colors.dim]
+black   = "#0f0f0f"
+red     = "#712b2b"
+green   = "#5f6f3a"
+yellow  = "#a17e4d"
+blue    = "#456877"
+magenta = "#704d68"
+cyan    = "#4d7770"
+white   = "#8e8e8e"
+
+[selection]
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+save_to_clipboard = false
+
+[cursor]
+style = { shape = "Block", blinking = "Off" }
+vi_mode_style = "None"
+blink_interval = 750
+blink_timeout = 5
+unfocused_hollow = true
+thickness = 0.15
+
+[terminal]
+osc52 = "OnlyCopy"
+
+[mouse]
+hide_when_typing = false
