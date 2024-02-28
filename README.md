@@ -1,4 +1,4 @@
-# Arch Linux
+# dotfiles
 1. Install git.
 ```bash
 sudo pacman -S git --needed
@@ -10,10 +10,14 @@ git clone git@github.com:EmilBjorkeng/dotfiles.git ~/.dotfiles
 # ...or use HTTPS and switch remotes later.
 git clone https://github.com/EmilBjorkeng/dotfiles.git ~/.dotfiles
 ```
-3. Create symlinks in the Home directory to the real files in the repo.
+3.1. For automatic install run the bootstrap script.
+```bash
+cd .dotfiles
+./bootstrap.sh
 ```
-ln -s ~/.dotfiles/.gitconfig ~/.gitconfig
-ln -s ~/.dotfiles/.bashrc ~/.bashrc
-ln -s ~/.dotfiles/.bash_commands ~/.bash_commands
-ln -s ~/.dotfiles/.bash_aliases ~/.bash_aliases
-``` 
+
+3.2. For manual install run the command for all the dotfiles you want linked.
+```bash
+# Change FILENAME with the name of the dotfile you want
+ln -s ~/.dotfiles/.FILENAME ~/.FILENAME
+```
