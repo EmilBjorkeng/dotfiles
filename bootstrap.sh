@@ -6,7 +6,7 @@ if [ $# -eq 0 -o "$1" != "--no-git" ]; then
     git pull origin main
 fi
 
-echo '1) Minimal (gitconfig)'
+echo '1) Minimal (gitconfig, nvim)'
 echo '2) Base Install (Minimal, yay, bashrc+)'
 echo '3) Hyprland (Base Install, hypr, waybar, alacritty, fuzzel)'
 read -p "Enter a selection (default=2): " sel
@@ -15,6 +15,9 @@ echo ''
 minimal () { 
     if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
         echo '.gitconfig linked'
+    fi
+    if ln -s ~/.dotfiles/nvim/ ~/.config/; then
+        echo '.config/nvim/ linked'
     fi
 }
 
@@ -32,11 +35,11 @@ base () {
 
 yay () {
     echo 'Installing yay...'
-    git clone https://aur.archlinux.org/yay.git
-    cd yay
+    git clone https://aur.archlinux.org/yay.git ~/.dotfiles/tmp
+    cd tmp
     makepkg -si
-    cd "$(dirname "${BASH_SOURCE}")";
-    sudo rm -r yay
+    cd ..
+    sudo rm -r tmp
 }
 
 hypr () {
