@@ -11,6 +11,7 @@ read -p "Enter a selection (default=1): " sel
 echo ''
 
 case $sel in
+    # Linux minimal
 	"1" | "" )
         echo 'Creating symlinks...'
 		if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
@@ -19,6 +20,7 @@ case $sel in
 
         echo ''
         echo 'Symlinks created' ;;
+    # Arch Linux
 	"2" )
         echo 'Creating symlinks...'
 		if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
@@ -36,7 +38,13 @@ case $sel in
         
         echo ''
         echo 'Symlinks created' ;;
+    # Arch Hyprland
 	"3" )
+        echo 'Installing software...'
+        sudo pacman -S hyprland waybar alacritty fuzzel --needed
+        echo 'Software installed'
+        echo ''
+
         echo 'Creating symlinks...'
 		if ln -s ~/.dotfiles/.gitconfig ~/.gitconfig; then
             echo '.gitconfig linked'
