@@ -1,14 +1,21 @@
 local M = {}
-    
-local errors = {}
-local error_messages = {}
 
--- Plugin setup
+local plugins = {}
+
+M.errors = {}
+M.error_messages = {}
+
 function M.setup()
+    require("plugin-manager").check_for_plugins()
+    require("plugin-manager").load_plugins()
+    vim.keymap.set('n', 'm', ':lua require("plugin-manager").open_menu()<CR>', { silent = true })
+end
+
+function M.check_for_plugins()
     local ls_path = os.getenv("HOME")..'/.config/nvim/lua' 
 
     -- Get all the plugins in the plugins folder
-    local plugins = {}
+    plugins = {}
     local ls = io.popen('ls -d '..ls_path..'/*/'):read('*a')
     
     for path in string.gmatch(ls, "[^\n]*") do
@@ -29,6 +36,11 @@ function M.setup()
             end
         end
     end
+end
+function M.load_plugins()
+
+    M.errors = {}
+    M.error_messages = {}
     
     -- Load the plugins
     for i=1,#plugins,1 do
@@ -38,11 +50,8 @@ function M.setup()
         end)
         if not pass then
             -- Error when loading
-            table.insert(errors, plugins[i])
-            table.insert(error_messages, response)
-            
-            print('Error while loading plugin:', plugins[i])
-            print('Message:', response)
+            table.insert(M.errors, plugins[i])
+            table.insert(M.error_messages, response)
         else
             -- Run the setup function for the module
             module.setup()
@@ -50,11 +59,11 @@ function M.setup()
     end
 
     -- Error message on launch
-    if #errors == 1 then
-        print('Error while loading plugin:', errors[0])
-    elseif #errors > 1 then
-        print('Error while loading '..#errors..' plugins')
-    end
+    if #M.errors == 1 then
+        print('Error while loading plugin:', M.errors[1])
+    elseif #M.errors > 1 then
+        print('Error while loading '..#M.errors..' plugins')
+    end 
 end
 
 return M
