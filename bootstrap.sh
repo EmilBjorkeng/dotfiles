@@ -80,7 +80,7 @@ case $sel in
     # Hyprland
 	"3" )
         echo 'Installing software...'
-        sudo pacman -S hyprland waybar alacritty fuzzel --needed
+        sudo pacman -S hyprland waybar alacritty fuzzel wl-clipboard --needed
         yay
         
         echo ''
