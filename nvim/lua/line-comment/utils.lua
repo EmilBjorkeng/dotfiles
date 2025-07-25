@@ -2,7 +2,7 @@ local M = {}
 
 -- Plugin setup
 function M.setup()
-    vim.keymap.set({'n', 'i'}, "<C-'>", ':lua require("line-comment").toggle_comment()<CR>', { silent = true })
+    vim.keymap.set({'n', 'i'}, "<C-_>", ':lua require("line-comment").toggle_comment()<CR>', { silent = true })
 end
 
 -- Toggle the comment
@@ -10,7 +10,7 @@ function M.toggle_comment()
     -- Get current line and exit if it's empty
 	local current_line = vim.api.nvim_get_current_line()
 	if current_line == '' then return end
-	
+
     -- Get the filetype from the filename
     -- And return if there is none
 	local filename = vim.api.nvim_buf_get_name(0)
@@ -19,13 +19,14 @@ function M.toggle_comment()
         -- TODO: Add prompt to type in comment character
         return
     end
-	
+
     local filetype = string.lower(string.sub(
         filename,
         string.len(filename)-string.find(string.reverse(filename),'%.')+2,
         string.len(filename)
     ))
-	
+    print(filename)
+
     -- Use the (single/multi)_comment_chars tables to get the comment character based on the filetype
     local single_comment_chars = {
 		c='//',h='//',cpp='//',hpp='//',java='//',
@@ -54,7 +55,7 @@ function M.toggle_comment()
             multi_comment_char = v
         end
     end
-	
+
     -- Check if there is any single line comment
     if single_comment_char ~= '' then
         M.single_line_comment(current_line, single_comment_char)
@@ -72,10 +73,10 @@ end
 
 -- For all the standard single line comments
 function M.single_line_comment(current_line, comment_char)
-    
+
     -- Add padding to the comment char
     comment_char = comment_char .. ' '
-	
+
     -- Get the first nonee space character and exit if it can't find any
     local first_none_space = 0
     for i = 1, string.len(current_line), 1 do
@@ -115,7 +116,7 @@ end
 
 -- For the multi line comments
 function M.multi_line_comment(current_line, comment_char)
-    
+
     -- Split the two parts of the comment char and add padding to them
     local split_comment_char = string_split(comment_char)
     split_comment_char[1] = split_comment_char[1] .. ' '
@@ -142,7 +143,7 @@ function M.multi_line_comment(current_line, comment_char)
         string.len(current_line)-string.len(split_comment_char[2])+1,
         string.len(current_line)
     ) == split_comment_char[2]
-    
+
     -- Check if the line is comment out
     if first_part and secound_part then
 

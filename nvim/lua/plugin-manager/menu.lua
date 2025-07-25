@@ -21,7 +21,7 @@ function M.redraw()
     local error_messages = utils.error_messages
 
     local lines = {}
-    if (#errors < 1) then 
+    if (#errors < 1) then
         lines = {"No Errors"}
     else
         for i=1,#errors,1 do
@@ -48,7 +48,7 @@ function M.create_win()
     -- Size of the window
     local width = 45
     local height = 20
-   
+
     -- Create floating window
     vim.api.nvim_open_win(buf, true, {
         relative = 'editor',
@@ -62,7 +62,7 @@ function M.create_win()
         title = 'Plugin-manager Errors',
         title_pos = 'center'
     })
-	
+
     -- Save window handle
     win = vim.api.nvim_get_current_win()
 
@@ -72,7 +72,7 @@ function M.create_win()
 	vim.api.nvim_buf_set_option(0, 'swapfile', false)
     -- Destroy buffer if hidden
 	vim.api.nvim_buf_set_option(0, 'bufhidden', 'wipe')
-    
+
     -- Local settings for the menu
 	vim.api.nvim_command('setlocal wrap')
     vim.api.nvim_win_set_option(win, 'winhl', 'Normal:Normal,FloatBorder:Normal,FloatTitle:Normal')
@@ -92,7 +92,7 @@ end
 function M.close_menu()
     if win and vim.api.nvim_win_is_valid(win) then
         vim.api.nvim_win_close(win, true)
-    end 
+    end
 end
 
 return M

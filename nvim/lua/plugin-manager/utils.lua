@@ -17,15 +17,15 @@ function M.check_for_plugins()
     -- Get all the plugins in the plugins folder
     plugins = {}
     local ls = io.popen('ls -d '..ls_path..'/*/'):read('*a')
-    
+
     for path in string.gmatch(ls, "[^\n]*") do
         if path ~= '' then
             local folder_name = path:match("[^/]*/[^/]*$")
             folder_name = string.sub(folder_name, 1, string.len(folder_name)-1)
-            
+
             -- Don't load the plugin-manager again (creating a loop)
             if folder_name ~= 'plugin-manager' then
-                
+
                 -- Check if there is a init.lua file in the folder
                 -- To check if its a plugin or just a random folder
                 local files_in_folder = io.popen('ls -d '..ls_path..'/'..folder_name..'/*'):read('*a')
@@ -41,12 +41,12 @@ function M.load_plugins()
 
     M.errors = {}
     M.error_messages = {}
-    
+
     -- Load the plugins
     for i=1,#plugins,1 do
         local module
         local pass, response = pcall(function()
-            module = require(plugins[i]) 
+            module = require(plugins[i])
         end)
         if not pass then
             -- Error when loading
@@ -63,7 +63,7 @@ function M.load_plugins()
         print('Error while loading plugin:', M.errors[1])
     elseif #M.errors > 1 then
         print('Error while loading '..#M.errors..' plugins')
-    end 
+    end
 end
 
 return M
