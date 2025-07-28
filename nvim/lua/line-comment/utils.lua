@@ -2,6 +2,7 @@ local M = {}
 
 -- Plugin setup
 function M.setup()
+    -- Ctrl + 7
     vim.keymap.set({'n', 'i'}, "<C-_>", ':lua require("line-comment").toggle_comment()<CR>', { silent = true })
 end
 
@@ -25,7 +26,6 @@ function M.toggle_comment()
         string.len(filename)-string.find(string.reverse(filename),'%.')+2,
         string.len(filename)
     ))
-    print(filename)
 
     -- Use the (single/multi)_comment_chars tables to get the comment character based on the filetype
     local single_comment_chars = {
@@ -158,7 +158,7 @@ function M.multi_line_comment(current_line, comment_char)
             )
         )
 
-    -- Check if there is not the first or secound part there 
+    -- Check if there is not the first or secound part there
     -- Because if there is one of them but not both do nothing
     elseif not first_part and not secound_part then
 

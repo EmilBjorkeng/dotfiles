@@ -12,7 +12,7 @@ function M.setup()
 end
 
 function M.check_for_plugins()
-    local ls_path = os.getenv("HOME")..'/.config/nvim/lua' 
+    local ls_path = os.getenv("HOME")..'/.config/nvim/lua'
 
     -- Get all the plugins in the plugins folder
     plugins = {}
