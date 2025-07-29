@@ -39,7 +39,7 @@ local colors = {
     green = '#068515',          -- Green - Good things (Add)
     red = '#d32d33',            -- Red - Bad, but not errorred bad (Delete)
     greyblue = '#394b70',       -- Greyblue - Difftext
-    cyan = '#00ffff'            -- Cyan - Used for directories
+    cyan = '#7498A9'            -- Cyan - Used for directories
 }
 
 -- Base colors
@@ -102,16 +102,16 @@ hi('TermCursor', { fg = colors.bg, bg = colors.fg })        -- Terminal cursor
 hi('TermCursorNC', { fg = colors.bg, bg = colors.grey })    -- Terminal cursor (non-focused)
 
 -- Visual and selection
-hi('Visual', { bg = colors.grey })                          -- Visual selection
-hi('VisualNOS', { bg = colors.grey })                       -- Visual selection (not owning selection)
-hi('Search', { fg = colors.black, bg = colors.highlight })  -- Search highlight (/search)
-hi('IncSearch', { fg = colors.bg, bg = colors.highlight })  -- Search highlight (while typing)
-hi('CurSearch', { fg = colors.bg, bg = colors.orange })     -- Current search result
-hi('Substitute', { fg = colors.bg, bg = colors.orange })    -- :substitute replacement text
-hi('CursorLine', { bg = colors.subtlehl })                  -- Line of the cursor (:set cursorline)
-hi('CursorColumn', { bg = colors.subtlehl })                -- Column of the cursor (:set cursorcolumn)
-hi('ColorColumn', { bg = colors.subtlehl })                 -- Column marker (:set colorcolumn)
-hi('QuickFixLine', { bg = colors.subtlehl })                -- Current line in quickfix window
+hi('Visual', { bg = colors.grey })                              -- Visual selection
+hi('VisualNOS', { bg = colors.grey })                           -- Visual selection (not owning selection)
+hi('Search', { fg = colors.black, bg = colors.highlight })      -- Search highlight (/search)
+hi('IncSearch', { fg = colors.black, bg = colors.highlight })   -- Search highlight (while typing)
+hi('CurSearch', { fg = colors.black, bg = colors.highlight })   -- Current search result
+hi('Substitute', { fg = colors.black, bg = colors.highlight })  -- :substitute replacement text
+hi('CursorLine', { bg = colors.subtlehl })                      -- Line of the cursor (:set cursorline)
+hi('CursorColumn', { bg = colors.subtlehl })                    -- Column of the cursor (:set cursorcolumn)
+hi('ColorColumn', { bg = colors.subtlehl })                     -- Column marker (:set colorcolumn)
+hi('QuickFixLine', { bg = colors.subtlehl })                    -- Current line in quickfix window
 
 -- Popup menu
 hi('Pmenu', { fg = colors.fg, bg = colors.subtlehl })       -- Any popup menus
