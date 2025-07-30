@@ -28,12 +28,6 @@ else
     DISTRO=$(uname -s)
 fi
 
-# Detect WSL
-IS_WSL=0
-if grep -qi microsoft /proc/version 2>/dev/null || [ -n "${WSL_DISTRO_NAME:-}" ]; then
-    IS_WSL=1
-fi
-
 COLOR="\e[36m"
 RED="\e[31m"
 NC="\e[0m"
@@ -70,46 +64,33 @@ link() {
     fi
 }
 
-append_bashrc_sourcing() {
-    cat << 'EOF' >> "$HOME/.bashrc"
-
-if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases
-fi
-
-if [ -f ~/.bash_commands ]; then
-    . ~/.bash_commands
-fi
-EOF
-}
-
 install_yay() {
     echo -e "\n==> Installing yay"
-    
+
     # Check for required tools
     if ! command -v makepkg &> /dev/null; then
         echo -e "${RED}Error:${NC} makepkg not found. Please install base-devel first:"
         echo "  sudo pacman -S base-devel"
         return 1
     fi
-    
+
     # Check for git (needed for cloning)
     if ! command -v git &> /dev/null; then
         echo -e "${RED}Error:${NC} git not found. Please install git first:"
         echo "  sudo pacman -S git"
         return 1
     fi
-    
+
     local tmp_dir="$SCRIPT_DIR/tmp"
-    
+
     # Clone with error handling
     if ! git clone https://aur.archlinux.org/yay.git "$tmp_dir"; then
         echo -e "${RED}Error:${NC} Failed to clone yay repository"
         return 1
     fi
-    
+
     cd "$tmp_dir"
-    
+
     if makepkg -si --noconfirm; then
         echo -e "${COLOR}yay${NC} installed"
         cd "$SCRIPT_DIR"
@@ -123,12 +104,6 @@ install_yay() {
     fi
 }
 
-if [ "$IS_WSL" -eq 1 ]; then
-    echo -e "\n==> ${COLOR}$DISTRO (WSL)${NC} detected"
-else
-    echo -e "\n==> ${COLOR}$DISTRO${NC} detected"
-fi
-
 case "$DISTRO" in
     arch)
         # yay
@@ -137,51 +112,13 @@ case "$DISTRO" in
         else
             echo -e "${COLOR}yay${NC} already installed"
         fi
-
-        echo -e "\n==> Creating symlinks: .bashrc"
-        link "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
-        link "$SCRIPT_DIR/.bash_aliases"  "$HOME/.bash_aliases"
-        link "$SCRIPT_DIR/.bash_commands" "$HOME/.bash_commands"
-        ;;
-
-    debian|ubuntu)
-        echo -e "\n==> Creating symlinks: .bashrc"
-        if [ -f "$HOME/.bashrc" ]; then
-            # Has bashrc
-            if [ -L "$HOME/.bashrc" ] && [ "$(readlink "$HOME/.bashrc")" = "$SCRIPT_DIR/.bashrc" ]; then
-                # Already linked
-                echo -e "${COLOR}.bashrc${NC} already linked"
-            else
-                # Not linked
-                if grep -q "bash_commands" "$HOME/.bashrc"; then
-                    # Already appended
-                    echo -e "${COLOR}.bashrc${NC} already updated"
-                else
-                    # Not appended
-                    echo -e "Updating .bashrc"
-                    append_bashrc_sourcing
-                    echo -e "Creating symlinks"
-                fi
-            fi 
-        else
-            # No bashrc
-            if [ "$IS_WSL" -eq 1 ]; then
-                # WSL
-                echo -e "Copying default WSL .bashrc"
-                # WSL regenerates ~/.bashrc if missing, so copy the default and append sourcing block
-                cp /etc/skel/.bashrc "$HOME/"          
-                echo -e "Updating .bashrc"
-                append_bashrc_sourcing
-            else
-                # Not WSL
-                link "$SCRIPT_DIR/.bashrc" "$HOME/.bashrc"
-            fi
-        fi
-        # Link the aliases and commands
-        link "$SCRIPT_DIR/.bash_aliases" "$HOME/.bash_aliases"
-        link "$SCRIPT_DIR/.bash_commands" "$HOME/.bash_commands"
         ;;
 esac
+
+echo -e "\n==> Creating symlinks: .zshrc"
+link "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
+link "$SCRIPT_DIR/.zsh_aliases"  "$HOME/.zsh_aliases"
+link "$SCRIPT_DIR/.zsh_commands" "$HOME/.zsh_commands"
 
 link "$SCRIPT_DIR/.gitconfig" "$HOME/.gitconfig"
 link "$SCRIPT_DIR/nvim/" "$HOME/.config/nvim"
