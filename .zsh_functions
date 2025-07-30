@@ -1,7 +1,5 @@
-#!/usr/bin/bsh
-
 restartshell() {
-    exec "$SHELL"
+    source ~/.zshrc
 }
 
 rasm() {
