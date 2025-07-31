@@ -3,6 +3,7 @@ local set = vim.opt
 set.tabstop=4
 set.shiftwidth=4
 set.expandtab=true
+set.wrap = false
 set.statusline = "%m%r %F %y %=Ln %l, Col %c   %P "
 
 set.termguicolors = true
