@@ -9,6 +9,7 @@ plugins=(
   git
   zsh-autosuggestions
   zsh-syntax-highlighting
+  zsh-history-substring-search
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -34,7 +35,9 @@ fi
 
 export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
 
-export DISPLAY_USER="$(tr '[:lower:]' '[:upper:]' <<< ${USER:0:1})${USER:1}"
+# Keybinds
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
 
 # Directory navigation
 setopt AUTO_CD                  # Just type directory name to cd
