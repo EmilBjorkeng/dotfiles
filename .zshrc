@@ -34,6 +34,8 @@ fi
 
 export PATH="$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH"
 
+export DISPLAY_USER="$(tr '[:lower:]' '[:upper:]' <<< ${USER:0:1})${USER:1}"
+
 # Directory navigation
 setopt AUTO_CD                  # Just type directory name to cd
 setopt AUTO_PUSHD               # Push directories to stack automatically
@@ -84,6 +86,6 @@ SAVEHIST=50000
 autoload -Uz compinit
 compinit
 
-for file in ~/.zsh/{aliases,functions,completions}.zsh; do
+for file in ~/.zsh_{aliases,functions,completions}; do
     [[ -r "$file" ]] && source "$file"
 done
