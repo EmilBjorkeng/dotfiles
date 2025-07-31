@@ -84,6 +84,6 @@ SAVEHIST=50000
 autoload -Uz compinit
 compinit
 
-for file in ~/.zsh/{exports,aliases,functions,completion}.zsh; do
+for file in ~/.zsh/{aliases,functions,completions}.zsh; do
     [[ -r "$file" ]] && source "$file"
 done
