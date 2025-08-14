@@ -12,14 +12,14 @@ function M.setup()
     ]])
 
     -- Remove Trailing Spaces
-    vim.api.nvim_create_user_command("RTS",
-        ':lua require("trailing-spaces").remove_trailing_spaces()<CR>',
-        { desc = "Removes all current trailing spaces", })
+    vim.api.nvim_create_user_command("RTS", function()
+        M.remove_trailing_spaces()
+    end, { desc = "Removes all current trailing spaces", })
 end
 
 function M.refresh()
     local bufnr = vim.api.nvim_get_current_buf()
-    if vim.api.nvim_buf_get_option(bufnr, "modifiable") then
+    if vim.api.nvim_get_option_value("modifiable", { buf = bufnr }) then
         M.highlight_trailing_spaces(bufnr)
     end
 end
@@ -30,14 +30,18 @@ function M.highlight_trailing_spaces(bufnr)
     for i, line in ipairs(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)) do
         local s, e = line:find("%s+$")
         if s and e then
-            vim.api.nvim_buf_add_highlight(bufnr, ns_id, "TrailingWhitespace", i - 1, s - 1, e)
+            vim.api.nvim_buf_set_extmark(bufnr, ns_id, i - 1, s - 1, {
+                end_row = i - 1,
+                end_col = e,
+                hl_group = "TrailingWhitespace",
+            })
         end
     end
 end
 
 function M.remove_trailing_spaces()
     local bufnr = vim.api.nvim_get_current_buf()
-    if vim.api.nvim_buf_get_option(bufnr, "modifiable") then
+    if vim.api.nvim_get_option_value("modifiable", { buf = bufnr }) then
         M.highlight_trailing_spaces(bufnr)
     end
 

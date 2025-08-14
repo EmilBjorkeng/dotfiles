@@ -7,6 +7,5 @@ local M = {}
 M.setup = utils.setup
 M.refresh = utils.refresh
 M.highlight_trailing_spaces = utils.highlight_trailing_spaces
-M.remove_trailing_spaces = utils.remove_trailing_spaces
 
 return M
