@@ -16,7 +16,7 @@ end
 local colors = {
     bg = '#0c0c0c',             -- Darkgrey for background
     fg = '#d4d4d4',             -- Lightgrey for text
-    comment = '#3B8D68',        -- Green for comments
+    comment = '#3B8d68',        -- Green for comments
     string = '#ce9178',         -- Orange for strings
     number = '#99ba81',         -- Purple for numbers
     keyword = '#ab67b1',        -- Purple for keywords
@@ -30,7 +30,11 @@ local colors = {
     inactive = '#858585',       -- Light grey for the status line
     highlight = '#ffff00',      -- Yellow for highlight
     errorred = "#ff2222",       -- Red for errors
+    warningred = '#bd7979',     -- A little softer red for warnings
+    hintblue = '#9acbec',       -- Blue for hints
     subtlehl = '#191520',       -- Very dark violet for subtle highlights
+    class = '#4ec9b0',          -- Turquoise for classes
+    enum = '#4352dc',           -- Blue for enum members
 
     white = '#ffffff',          -- White - For pure white elements
     black = '#000000',          -- Black - For pure black elements
@@ -39,7 +43,7 @@ local colors = {
     green = '#068515',          -- Green - Good things (Add)
     red = '#d32d33',            -- Red - Bad, but not errorred bad (Delete)
     greyblue = '#394b70',       -- Greyblue - Difftext
-    cyan = '#7498A9'            -- Cyan - Used for directories
+    cyan = '#7498A9',           -- Cyan - Used for directories
 }
 
 -- Base colors
@@ -121,7 +125,7 @@ hi('PmenuThumb', { bg = colors.white })                     -- The scroll bar fo
 
 -- Messages and errors
 hi('ErrorMsg', { fg = colors.fg, bg = colors.errorred })    -- Error message
-hi('WarningMsg', { fg = colors.errorred })                  -- Warning message
+hi('WarningMsg', { fg = colors.warningred })                -- Warning message
 hi('MoreMsg', { fg = colors.types, bold = true })           -- Normal messages (:echo)
 hi('ModeMsg', { fg = colors.fg, bold = true })              -- Mode text: -- INSERT --
 
@@ -154,4 +158,65 @@ hi('SpecialKey', { fg = colors.darkgrey })                  -- Special character
 hi('Whitespace', { fg = colors.darkgrey })                  -- Whitespace characters (:set list)
 hi('MatchParen', { bg = colors.darkgrey, bold = true })     -- The matching {} when you hover over one
 hi('Conceal', { fg = colors.grey })                         -- Concealed text
-hi('Todo', { fg = colors.bg, bg = colors.highlight })       -- TODO, FIXME
+hi('Todo', { fg = colors.bg, bg = colors.highlight, bold = true })  -- TODO, FIXME
+
+-- LSP (Semantic tokens)
+hi('@lsp.type.class',         { fg = colors.class })        -- class Foo
+hi('@lsp.type.enum',          { fg = colors.class })        -- enum Foo
+hi('@lsp.type.interface',     { fg = colors.class })      -- interface Foo
+hi('@lsp.type.struct',        { fg = colors.class })        -- struct Foo
+hi('@lsp.type.type',          { fg = colors.class })        -- generic or typedef-like constructs
+hi('@lsp.type.typeParameter', { fg = colors.class })        -- <T>, <U> in templates
+
+hi('@lsp.type.function',      { fg = colors.func })         -- function foo()
+hi('@lsp.type.method',        { fg = colors.func })         -- class method foo()
+hi('@lsp.type.property',      { fg = colors.fg })           -- object.property
+hi('@lsp.type.variable',      { fg = colors.fg })           -- let x = ...
+
+hi('@lsp.type.parameter',     { fg = colors.fg })           -- function(param)
+hi('@lsp.type.keyword',       { fg = colors.keyword })      -- if, else, for, etc.
+hi('@lsp.type.namespace',     { fg = colors.class })        -- namespace MyApp
+hi('@lsp.type.enumMember',    { fg = colors.enum })         -- Enum.Value
+hi('@lsp.type.decorator',     { fg = colors.darkgrey })      -- @decorator
+hi('@lsp.type.event',         { fg = colors.special })      -- UI events or similar
+hi('@lsp.type.operator',      { fg = colors.operator })     -- +, -, *, /
+hi('@lsp.type.comment',       { fg = colors.comment })      -- Semantic comments, fallback
+
+-- LSP diagnostics (virtual text and signs)
+hi('DiagnosticError',             { fg = colors.errorred })     -- Error in code
+hi('DiagnosticWarn',              { fg = colors.warningred })   -- Warning in code
+hi('DiagnosticInfo',              { fg = colors.types })        -- Informational hint
+hi('DiagnosticHint',              { fg = colors.hintblue })     -- Hint or suggestion
+
+-- LSP diagnostics in virtual text (inline errors)
+hi('DiagnosticVirtualTextError',  { fg = colors.errorred })     -- Inline error
+hi('DiagnosticVirtualTextWarn',   { fg = colors.warningred })   -- Inline warning
+hi('DiagnosticVirtualTextInfo',   { fg = colors.types })        -- Inline info
+hi('DiagnosticVirtualTextHint',   { fg = colors.hintblue })     -- Inline hint
+
+-- LSP diagnostics underlines (with undercurl)
+hi('DiagnosticUnderlineError',    { undercurl = true, sp = colors.errorred })   -- Error underline
+hi('DiagnosticUnderlineWarn',     { undercurl = true, sp = colors.warningred }) -- Warning underline
+hi('DiagnosticUnderlineInfo',     { undercurl = true, sp = colors.types })      -- Info underline
+hi('DiagnosticUnderlineHint',     { undercurl = true, sp = colors.hintblue })   -- Hint underline
+
+-- LSP diagnostics in the sign column (icons or symbols)
+hi('DiagnosticSignError',         { fg = colors.errorred })     -- Sign: error
+hi('DiagnosticSignWarn',          { fg = colors.warningred })   -- Sign: warning
+hi('DiagnosticSignInfo',          { fg = colors.types })        -- Sign: info
+hi('DiagnosticSignHint',          { fg = colors.hintblue })     -- Sign: hint
+
+-- LSP inlay hints (parameter types, names, etc.)
+hi('LspInlayHint', { fg = colors.grey, bg = colors.bg, italic = true }) -- Small inline type/name hints
+
+-- LSP references (highlight when hovering symbol or using <Ctrl-]>)
+hi('LspReferenceText',  { bg = colors.subtlehl })           -- Reference to symbol (default)
+hi('LspReferenceRead',  { bg = colors.subtlehl })           -- Read reference
+hi('LspReferenceWrite', { bg = colors.subtlehl })           -- Write reference
+
+-- LSP CodeLens (extra info like # of references, test links, etc.)
+hi('LspCodeLens',           { fg = colors.comment, italic = true }) -- Dimmed virtual text above functions
+hi('LspCodeLensSeparator',  { fg = colors.darkgrey })               -- Separator between CodeLens items
+
+-- Highlight of current parameter in signature help (e.g. when typing func(arg1,|)
+hi('LspSignatureActiveParameter', { fg = colors.highlight, bold = true })   -- Highlight current param in call
