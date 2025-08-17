@@ -1,9 +1,6 @@
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Theme
-#ZSH_THEME="robbyrussell"
-
 # Plugins
 plugins=(
   git
@@ -72,7 +69,7 @@ setopt AUTO_LIST                # List choices on ambiguous completion
 setopt AUTO_PARAM_SLASH         # Add slash after directory completions
 
 # Correction
-setopt CORRECT                  # Command correction
+# setopt CORRECT                  # Command correction
 # setopt CORRECT_ALL            # Argument correction
 
 # Other useful options
