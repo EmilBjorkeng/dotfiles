@@ -163,7 +163,7 @@ hi('Todo', { fg = colors.bg, bg = colors.highlight, bold = true })  -- TODO, FIX
 -- LSP (Semantic tokens)
 hi('@lsp.type.class',         { fg = colors.class })        -- class Foo
 hi('@lsp.type.enum',          { fg = colors.class })        -- enum Foo
-hi('@lsp.type.interface',     { fg = colors.class })      -- interface Foo
+hi('@lsp.type.interface',     { fg = colors.class })        -- interface Foo
 hi('@lsp.type.struct',        { fg = colors.class })        -- struct Foo
 hi('@lsp.type.type',          { fg = colors.class })        -- generic or typedef-like constructs
 hi('@lsp.type.typeParameter', { fg = colors.class })        -- <T>, <U> in templates
