@@ -2,6 +2,9 @@ local diff = require('git-status.diff')
 
 local M = {}
 
+local git_signs_group = vim.api.nvim_create_augroup("GitSignsDynamic", { clear = true })
+local enabled = true
+
 local git_signs = {
     added = "+",
     modified = "~",
@@ -93,22 +96,25 @@ local function define_combined_signs()
     end
 end
 
-function M.setup()
-    define_combined_signs()
+local function enable_git_status()
+    vim.api.nvim_clear_autocmds({ group = git_signs_group })
 
     -- Clear on typing (Same effect as LSP)
     -- Makes it less distracting when typing
-    vim.api.nvim_create_autocmd({ 'TextChangedI' }, {
+    vim.api.nvim_create_autocmd("TextChangedI", {
+        group = git_signs_group,
         callback = clear_git_signs,
     })
 
     -- Update on buffer enter, after writing, after leaving insert mode and after text changes in normal mode
-    vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave', 'TextChanged' }, {
+    vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
+        group = git_signs_group,
         callback = update_git_signs,
     })
 
     -- Update when LSP updates (to get the correct combinations)
     vim.api.nvim_create_autocmd("DiagnosticChanged", {
+        group = git_signs_group,
         callback = function()
             if vim.fn.mode() ~= "i" then
                 update_git_signs()
@@ -116,8 +122,33 @@ function M.setup()
         end,
     })
 
+    update_git_signs()
+end
+
+local function disable_git_status()
+    vim.api.nvim_clear_autocmds({ group = git_signs_group })
+    clear_git_signs()
+end
+
+local function toggle_git_signs()
+    if enabled then
+        disable_git_status()
+        enabled = false
+        print("Git status disabled")
+    else
+        enable_git_status()
+        enabled = true
+        print("Git status enabled")
+    end
+end
+
+function M.setup()
+    define_combined_signs()
+    enable_git_status()
+
     -- Manual refresh command
     vim.api.nvim_create_user_command('GitRefresh', update_git_signs, {})
+    vim.api.nvim_create_user_command('GitToggle', toggle_git_signs, {})
 end
 
 return M
