@@ -13,14 +13,6 @@ NC="\e[0m"
 available=0
 linked=0
 
-log_text() {
-    echo -e "$1"
-}
-
-log_info() {
-    echo -e "${COLOR}$1${NC} $2"
-}
-
 log_warning() {
     echo -e "${RED}Warning:${NC} $1"
 }
@@ -33,7 +25,7 @@ log_error() {
 validate_location() {
     if [ "$SCRIPT_DIR" != "$EXPECTED_DIR" ]; then
         log_error "This script must be run from $EXPECTED_DIR"
-        log_text "Current location: $SCRIPT_DIR"
+        echo -e "Current location: $SCRIPT_DIR"
         exit 1
     fi
 }
@@ -42,9 +34,9 @@ validate_location() {
 update_repository() {
     if command -v git &> /dev/null && git rev-parse --git-dir > /dev/null 2>&1; then
         if [ $# -eq 0 ] || [ "$1" != "--no-git" ]; then
-            log_text "==> Pulling latest changes from Git repository..."
+            echo -e "==> Pulling latest changes from Git repository..."
             if git pull origin main; then
-                log_text "Repository updated"
+                echo -e "Repository updated"
             else
                 log_warning "Git pull failed, continuing..."
             fi
@@ -77,7 +69,7 @@ link() {
 
     # Already exists and is correct symlink
     if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
-        log_info "${basename_dest}" "already linked"
+        echo -e "${COLOR}${basename_dest}${NC} already linked"
         linked=$((linked + 1))
         return 0
     fi
@@ -106,7 +98,7 @@ link() {
 
     # Create symlink
     if ln -sf "$src" "$dest"; then
-        log_info "${basename_dest}" "linked"
+        echo -e "${COLOR}${basename_dest}${NC} linked"
         linked=$((linked + 1))
         return 0
     else
@@ -117,7 +109,7 @@ link() {
 
 # Install yay AUR helper for Arch Linux
 install_yay() {
-    log_text "\n==> Installing yay AUR helper..."
+    echo -e "\n==> Installing yay AUR helper..."
 
     # Check for required tools
     local missing_deps=()
@@ -130,7 +122,7 @@ install_yay() {
 
     if [ ${#missing_deps[@]} -gt 0 ]; then
         log_error "Missing dependencies: ${missing_deps[*]}"
-        log_text "Please install them first: sudo pacman -S ${missing_deps[*]}"
+        echo -e "Please install them first: sudo pacman -S ${missing_deps[*]}"
         return 1
     fi
 
@@ -151,7 +143,7 @@ install_yay() {
     if git clone https://aur.archlinux.org/yay.git "$tmp_dir"; then
         cd "$tmp_dir"
         if makepkg -si --noconfirm; then
-            log_info "yay" "installed successfully"
+            echo -e "${COLOR}yay${NC} installed successfully"
             return 0
         else
             log_error "Failed to build yay"
@@ -169,11 +161,11 @@ install_yay() {
 
 install_oh_my_zsh() {
     if [ -d "$HOME/.oh-my-zsh" ]; then
-        log_info "oh-my-zsh" "already installed"
+        echo -e "${COLOR}oh-my-zsh${NC} already installed"
         return 0
     fi
 
-    log_text "\n==> Installing ${COLOR}oh-my-zsh${NC}..."
+    echo -e "\n==> Installing ${COLOR}oh-my-zsh${NC}..."
 
     # Check for required tools
     if ! command -v curl &> /dev/null && ! command -v wget &> /dev/null; then
@@ -198,7 +190,7 @@ install_oh_my_zsh() {
         # Run the installer in unattended mode
         sh -c "$install_script" "" --unattended
         if [ $? -eq 0 ]; then
-            log_info "oh-my-zsh" "installed successfully"
+            echo -e "${COLOR}oh-my-zsh${NC} installed successfully"
             return 0
         else
             log_error "Failed to install oh-my-zsh"
@@ -215,7 +207,7 @@ install_zsh_plugins() {
     local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
     local plugins_dir="$zsh_custom/plugins"
 
-    log_text "\n==> Installing ${COLOR}oh-my-zsh${NC} plugins..."
+    echo -e "\n==> Installing ${COLOR}oh-my-zsh${NC} plugins..."
 
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
         log_warning "${COLOR}oh-my-zsh${NC} not found, skipping plugin installation"
@@ -237,12 +229,12 @@ install_zsh_plugins() {
         local plugin_dir="$plugins_dir/$plugin_name"
 
         if [ -d "$plugin_dir" ]; then
-            log_info "${plugin_name}" "already installed, updating..."
+            echo -e "${COLOR}${plugin_name}${NC} already installed, updating..."
             cd "$plugin_dir" && git pull
         else
-            log_text "Installing ${COLOR}$plugin_name${NC}..."
+            echo -e "Installing ${COLOR}$plugin_name${NC}..."
             if git clone "$plugin_url" "$plugin_dir"; then
-                log_info "${plugin_name}" "installed"
+                echo -e "${COLOR}${plugin_name}${NC} installed"
             else
                 log_error "Failed to install ${COLOR}${plugin_name}${NC}"
             fi
@@ -261,7 +253,7 @@ link_configs() {
         "nvim/:$HOME/.config/nvim"
     )
 
-    log_text "\n==> Creating symlinks..."
+    echo -e "\n==> Creating symlinks..."
 
     local zsh_was_linked=false
     for config in "${configs[@]}"; do
@@ -291,19 +283,19 @@ setup_distro() {
         arch)
             if ! command -v yay &> /dev/null; then
                 if install_yay; then
-                    log_info "yay" "setup completed"
+                    echo -e "${COLOR}yay${NC} setup completed"
                 else
                     log_warning "${COLOR}yay${NC} installation failed, continuing..."
                 fi
             else
-                log_info "yay" "already installed"
+                echo -e "${COLOR}yay${NC} already installed"
             fi
             ;;
     esac
 }
 
 main() {
-    log_text "==> Starting dotfiles installation..."
+    echo -e "==> Starting dotfiles installation..."
     echo ""
 
     validate_location
@@ -311,14 +303,14 @@ main() {
 
     local distro
     distro=$(detect_distro)
-    log_text "Detected distribution: ${COLOR}${distro}${NC}"
+    echo -e "Detected distribution: ${COLOR}${distro}${NC}"
 
     setup_distro "$distro"
     link_configs
 
     echo ""
     if [ $linked -eq $available ]; then
-        log_text "Installation complete! ${COLOR}All${NC} $linked/$available symlinks created successfully."
+        echo -e "Installation complete! ${COLOR}All${NC} $linked/$available symlinks created successfully."
     else
         log_warning "Installation complete with issues: $linked/$available symlinks succeeded."
     fi
