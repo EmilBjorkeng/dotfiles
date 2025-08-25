@@ -19,7 +19,7 @@ local servers = {
     rust_language_server = {
         name = 'rust-analyzer',
         binary_path = 'rust-analyzer',
-        filetype = { 'rs' },
+        filetype = { 'rust' },
     },
     html_language_server = {
         name = 'html',

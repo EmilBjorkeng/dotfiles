@@ -29,7 +29,6 @@ function M.get_config(servers)
                     diagnostics = {
                         globals = {
                             'vim',
-                            'awesome',  -- Add if using AwesomeWM
                         },
                         disable = {
                             'missing-fields',
@@ -42,7 +41,6 @@ function M.get_config(servers)
                     workspace = {
                         library = {
                             vim.env.VIMRUNTIME,
-                            -- Add this for better Neovim API support
                             vim.fn.stdpath("config"),
                         },
                         checkThirdParty = false,
@@ -245,8 +243,9 @@ function M.get_config(servers)
             },
             settings = {
                 python = {
+                    pythonPath = "/usr/bin/python",
                     analysis = {
-                        typeCheckingMode = 'strict',  -- Changed from 'basic' for better type checking
+                        typeCheckingMode = 'basic',
                         autoSearchPaths = true,
                         useLibraryCodeForTypes = true,
                         diagnosticMode = 'workspace',
@@ -294,7 +293,7 @@ function M.get_config(servers)
                         experimental = {
                             enable = true,
                         },
-                        disabled = { "unresolved-proc-macro" },  -- Common false positive
+                        disabled = { "unresolved-proc-macro" },
                     },
                     inlayHints = {
                         bindingModeHints = { enable = true },
