@@ -1,6 +1,6 @@
-local utils = require("plugin-manager.utils")
+local core = require("plugin-manager.core")
 
-local buf, win, start_win
+local buf, win
 
 local M = {}
 
@@ -10,35 +10,41 @@ local mappings = {
 
 function M.set_mappings()
     for k,v in pairs(mappings) do
-        vim.api.nvim_buf_set_keymap(buf, 'n', k, ':lua require("plugin-manager").'..v..'<CR>', {
+        vim.api.nvim_buf_set_keymap(buf, 'n', k, ':lua require("plugin-manager.menu").'..v..'<CR>', {
             nowait = true, noremap = true, silent = true
         })
     end
 end
 
 function M.redraw()
-    local errors = utils.errors
-    local error_messages = utils.error_messages
+    local errors = core.errors
+    local error_messages = core.error_messages
 
     local lines = {}
     if (#errors < 1) then
         lines = {"No Errors"}
     else
         for i=1,#errors,1 do
-            table.insert(lines, "> "..utils.errors[1])
-            table.insert(lines, utils.error_messages[1])
-            table.insert(lines, "") -- Space
+            -- Plugin name
+            table.insert(lines, "> "..errors[i])
+
+            -- Error message
+            for line in string.gmatch(error_messages[i], "([^\n]*)\n?") do
+                if line ~= "" then
+                    table.insert(lines, line)
+                end
+            end
+            table.insert(lines, "")
         end
-        table.remove(lines, #lines)
+        table.remove(lines, #lines) -- Remove extra space
     end
 
-	vim.api.nvim_buf_set_option(buf, 'modifiable', true)
+    vim.bo[buf].modifiable = true
     vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
-	vim.api.nvim_buf_set_option(buf, 'modifiable', false)
+    vim.bo[buf].modifiable = false
 end
 
 function M.create_win()
-    start_win = vim.api.nvim_get_current_win()
     buf = vim.api.nvim_create_buf(false, true)
 
     -- Get size of the parent window
@@ -46,8 +52,8 @@ function M.create_win()
     local parent_height = vim.api.nvim_win_get_height(0)
 
     -- Size of the window
-    local width = 45
-    local height = 20
+    local width = 95
+    local height = 40
 
     -- Create floating window
     vim.api.nvim_open_win(buf, true, {
@@ -67,26 +73,26 @@ function M.create_win()
     win = vim.api.nvim_get_current_win()
 
     -- Prevents no save errors
-	vim.api.nvim_buf_set_option(0, 'buftype', 'nofile')
+    vim.bo[0].buftype = "nofile"
     -- Disables swap files for the menu
-	vim.api.nvim_buf_set_option(0, 'swapfile', false)
+    vim.bo[0].swapfile = false
     -- Destroy buffer if hidden
-	vim.api.nvim_buf_set_option(0, 'bufhidden', 'wipe')
+    vim.bo[0].bufhidden = "wipe"
 
     -- Local settings for the menu
-	vim.api.nvim_command('setlocal wrap')
-    vim.api.nvim_win_set_option(win, 'winhl', 'Normal:Normal,FloatBorder:Normal,FloatTitle:Normal')
+    vim.api.nvim_command('setlocal wrap')
+    vim.wo[win].winhl = "Normal:Normal,FloatBorder:Normal,FloatTitle:Normal"
 
     M.set_mappings()
 end
 
 function M.open_menu()
-   	if win and vim.api.nvim_win_is_valid(win) then
-		vim.api.nvim_set_current_win(win)
-	else
-		M.create_win()
-	end
-	M.redraw()
+       if win and vim.api.nvim_win_is_valid(win) then
+        vim.api.nvim_set_current_win(win)
+    else
+        M.create_win()
+    end
+    M.redraw()
 end
 
 function M.close_menu()
