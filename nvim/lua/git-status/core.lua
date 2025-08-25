@@ -60,7 +60,7 @@ local function update_git_signs()
     end
 end
 
-local function define_combined_signs()
+function M.define_combined_signs()
     -- Pure git signs
     for git_status, symbol in pairs(git_signs) do
         local highlight = "DiffChange"
@@ -96,7 +96,7 @@ local function define_combined_signs()
     end
 end
 
-local function enable_git_status()
+function M.enable_git_status()
     vim.api.nvim_clear_autocmds({ group = git_signs_group })
 
     -- Clear on typing (Same effect as LSP)
@@ -125,30 +125,21 @@ local function enable_git_status()
     update_git_signs()
 end
 
-local function disable_git_status()
+function M.disable_git_status()
     vim.api.nvim_clear_autocmds({ group = git_signs_group })
     clear_git_signs()
 end
 
-local function toggle_git_signs()
+function M.toggle_git_signs()
     if enabled then
-        disable_git_status()
+        M.disable_git_status()
         enabled = false
         print("Git status disabled")
     else
-        enable_git_status()
+        M.enable_git_status()
         enabled = true
         print("Git status enabled")
     end
-end
-
-function M.setup()
-    define_combined_signs()
-    enable_git_status()
-
-    -- Manual refresh command
-    vim.api.nvim_create_user_command('GitRefresh', update_git_signs, {})
-    vim.api.nvim_create_user_command('GitToggle', toggle_git_signs, {})
 end
 
 return M
