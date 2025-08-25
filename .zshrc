@@ -82,6 +82,8 @@ HISTFILE=~/.zsh_history
 HISTSIZE=50000
 SAVEHIST=50000
 
+unset LS_COLORS
+
 # Load and initialize compleation system
 autoload -Uz compinit
 compinit
