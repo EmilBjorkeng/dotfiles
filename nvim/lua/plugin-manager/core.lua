@@ -1,21 +1,14 @@
 local M = {}
 
-local plugins = {}
-
+M.plugins = {}
 M.errors = {}
 M.error_messages = {}
-
-function M.setup()
-    require("plugin-manager").check_for_plugins()
-    require("plugin-manager").load_plugins()
-    vim.keymap.set('n', 'm', ':lua require("plugin-manager").open_menu()<CR>', { silent = true })
-end
 
 function M.check_for_plugins()
     local ls_path = os.getenv("HOME")..'/.config/nvim/lua'
 
     -- Get all the plugins in the plugins folder
-    plugins = {}
+    M.plugins = {}
     local ls = io.popen('ls -d '..ls_path..'/*/'):read('*a')
 
     for path in string.gmatch(ls, "[^\n]*") do
@@ -31,30 +24,35 @@ function M.check_for_plugins()
                 local files_in_folder = io.popen('ls -d '..ls_path..'/'..folder_name..'/*'):read('*a')
                 local init_file = files_in_folder:match(".*init.lua")
                 if init_file ~= nil then
-                    table.insert(plugins, folder_name)
+                    table.insert(M.plugins, folder_name)
                 end
             end
         end
     end
 end
+
 function M.load_plugins()
 
     M.errors = {}
     M.error_messages = {}
 
     -- Load the plugins
-    for i=1,#plugins,1 do
+    for i=1,#M.plugins,1 do
         local module
         local pass, response = pcall(function()
-            module = require(plugins[i])
+            module = require(M.plugins[i])
         end)
         if not pass then
             -- Error when loading
-            table.insert(M.errors, plugins[i])
+            table.insert(M.errors, M.plugins[i])
             table.insert(M.error_messages, response)
         else
             -- Run the setup function for the module
-            module.setup()
+            local pass, response = pcall(function() module.setup() end)
+            if not pass then
+                table.insert(M.errors, M.plugins[i])
+                table.insert(M.error_messages, response)
+            end
         end
     end
 
