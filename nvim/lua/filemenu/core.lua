@@ -76,16 +76,6 @@ function M.build_menu_lines()
     return entries
 end
 
-local function open_file(cmd, path)
-    local success, err = pcall(function()
-    end)
-
-    -- Only update original path if it acually switches files
-    if success then
-        M.original_cwd = vim.loop.cwd()
-    end
-end
-
 function M.menu_select(button)
     local line_num = vim.api.nvim_win_get_cursor(0)[1]
     local line_text = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1]
@@ -108,13 +98,13 @@ function M.menu_select(button)
         vim.api.nvim_win_set_cursor(0, {1, 0})
 
         -- Redraw the menu
-        require("filemenu").redraw()
+        require('filemenu').redraw()
     else
         -- File
         local cwd = vim.loop.cwd()
         local path = cwd .. '/' .. name
 
-        require("filemenu").close_menu()
+        require('filemenu').close_menu()
 
         if button == 'CR' then
             vim.cmd("edit " .. vim.fn.fnameescape(path))
