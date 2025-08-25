@@ -43,12 +43,12 @@ local function get_combined_sign(line_num, status)
 end
 
 
-local function clear_git_signs()
+function M.clear_git_signs()
     local bufnr = vim.api.nvim_get_current_buf()
     vim.fn.sign_unplace("git_lines", { buffer = bufnr })
 end
 
-local function update_git_signs()
+function M.update_git_signs()
     local bufnr = vim.api.nvim_get_current_buf()
     local line_status = diff.get_git_diff()
 
@@ -103,13 +103,13 @@ function M.enable_git_status()
     -- Makes it less distracting when typing
     vim.api.nvim_create_autocmd("TextChangedI", {
         group = git_signs_group,
-        callback = clear_git_signs,
+        callback = M.clear_git_signs,
     })
 
     -- Update on buffer enter, after writing, after leaving insert mode and after text changes in normal mode
     vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave", "TextChanged" }, {
         group = git_signs_group,
-        callback = update_git_signs,
+        callback = M.update_git_signs,
     })
 
     -- Update when LSP updates (to get the correct combinations)
@@ -117,17 +117,17 @@ function M.enable_git_status()
         group = git_signs_group,
         callback = function()
             if vim.fn.mode() ~= "i" then
-                update_git_signs()
+                M.update_git_signs()
             end
         end,
     })
 
-    update_git_signs()
+    M.update_git_signs()
 end
 
 function M.disable_git_status()
     vim.api.nvim_clear_autocmds({ group = git_signs_group })
-    clear_git_signs()
+    M.clear_git_signs()
 end
 
 function M.toggle_git_signs()
