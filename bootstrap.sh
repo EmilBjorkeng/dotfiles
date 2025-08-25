@@ -251,6 +251,7 @@ link_configs() {
         ".zsh_compleations:$HOME/.zsh_compleations"
         ".gitconfig:$HOME/.gitconfig"
         "nvim/:$HOME/.config/nvim"
+        "eza/:$HOME/.config/eza"
     )
 
     echo -e "\n==> Creating symlinks..."
