@@ -19,7 +19,7 @@ local servers = {
     rust_language_server = {
         name = 'rust-analyzer',
         binary_path = 'rust-analyzer',
-        filetype = { 'rust' },
+        filetype = { 'rs' },
     },
     html_language_server = {
         name = 'html',
@@ -106,6 +106,8 @@ function M.setup()
     if next(failed_servers) then
         vim.notify("[LSP] Some servers failed to start. Run :checkhealth lsp for details", vim.log.levels.WARN)
     end
+
+    vim.api.nvim_create_user_command("LSPList", M.list, {})
 end
 
 -- Health check function
@@ -141,19 +143,31 @@ function M.health()
     end
 end
 
--- Utility functions
-function M.restart()
-    vim.cmd("LspRestart")
-    vim.notify("[LSP] Restarted all LSP clients", vim.log.levels.INFO)
-end
+function M.list()
+    local installed = {}
+    local running = {}
+    local language = {}
 
-function M.info()
-    vim.cmd("LspInfo")
-end
+    for name, server in pairs(servers) do
+        table.insert(installed, server.name)
+        language[server.name] = name:match('^[^_]+')
+    end
 
-function M.stop()
-    vim.lsp.stop_client(vim.lsp.get_clients())
-    vim.notify("[LSP] Stopped all LSP clients", vim.log.levels.INFO)
+    -- collect running clients
+    for _, client in pairs(vim.lsp.get_clients()) do
+        running[client.name] = true
+    end
+
+    -- build message
+    local lines = {}
+    for _, server in ipairs(installed) do
+        local status = running[server] and "Running" or ""
+        local lang = language[server]
+        table.insert(lines, string.format("%s (%s) %s", server, lang, status))
+    end
+    table.sort(lines)
+
+    vim.notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "LSP Servers" })
 end
 
 return M
