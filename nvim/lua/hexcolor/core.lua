@@ -2,30 +2,17 @@ local M = {}
 
 local ns_id = vim.api.nvim_create_namespace("Hexcolor")
 
-function M.setup()
-    vim.cmd([[
-        augroup HexcolorHighlight
-        autocmd!
-        autocmd BufEnter,BufWritePost,TextChanged,TextChangedI * lua require('hexcolor').refresh()
-        augroup END
-    ]])
+function M.toggle()
+    local bufnr = vim.api.nvim_get_current_buf()
+    local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, 0, -1, {})
 
-    vim.api.nvim_create_user_command('HexcolorRefresh', function()
+    if #marks > 0 then
+        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+        print("Hex colour highlighting disabled")
+    else
         M.refresh()
-    end, { desc = 'Refresh hex colour highlighting' })
-
-    vim.api.nvim_create_user_command('HexcolorToggle', function()
-        local bufnr = vim.api.nvim_get_current_buf()
-        local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, 0, -1, {})
-
-        if #marks > 0 then
-            vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
-            print("Hex colour highlighting disabled")
-        else
-            M.refresh()
-            print("Hex colour highlighting enabled")
-        end
-    end, { desc = 'Toggle hex colour highlighting' })
+        print("Hex colour highlighting enabled")
+    end
 end
 
 function M.refresh()
