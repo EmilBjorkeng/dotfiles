@@ -2,21 +2,6 @@ local M = {}
 
 local ns_id = vim.api.nvim_create_namespace("TrailingSpaces")
 
-function M.setup()
-    vim.cmd [[highlight TrailingWhitespace ctermbg=red guibg=red]]
-    vim.cmd([[
-        augroup TrailingSpaces
-        autocmd!
-        autocmd BufEnter,BufWritePost,TextChanged,TextChangedI * lua require('trailing-spaces').refresh()
-        augroup END
-    ]])
-
-    -- Remove Trailing Spaces
-    vim.api.nvim_create_user_command("RTS", function()
-        M.remove_trailing_spaces()
-    end, { desc = "Removes all current trailing spaces", })
-end
-
 function M.refresh()
     local bufnr = vim.api.nvim_get_current_buf()
     if vim.api.nvim_get_option_value("modifiable", { buf = bufnr }) then
