@@ -1,16 +1,21 @@
-local utils = require("filemenu.utils")
+local commands = require("filemenu.commands")
 local menu = require("filemenu.menu")
-local filemenu = require("filemenu.filemenu")
 
 local M = {}
 
 -- Rute calls made to this module to the functions
 -- in the other modules
-M.setup = utils.setup
+M.setup = function()
+    commands.setup()
+
+    -- Set up colors
+    vim.api.nvim_set_hl(0, "FilemenuBlue", { fg = "#7498A9" })
+    vim.api.nvim_set_hl(0, "FilemenuGrey", { fg = "#858585" })
+    vim.api.nvim_set_hl(0, "FilemenuPurple", { fg = "#7960a4" })
+    vim.api.nvim_set_hl(0, "FilemenuOrange", { fg = "#a7371b" })
+    vim.api.nvim_set_hl(0, "FilemenuGreen", { fg = "#8A9F37" })
+end
 M.redraw = menu.redraw
-M.create_win = menu.create_win
-M.open_menu = menu.open_menu
 M.close_menu = menu.close_menu
-M.menu_select = filemenu.menu_select
 
 return M
