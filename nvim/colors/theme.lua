@@ -131,7 +131,7 @@ hi('ModeMsg', { fg = colors.fg, bold = true })              -- Mode text: -- INS
 
 -- Diff colors (Vimdiff: nvim -d file1 file2)
 hi('DiffAdd', { fg = colors.green })                        -- Vimdiff: lines that are added
-hi('DiffChange', { bg = colors.subtlehl })                  -- Vimdiff: lines that are changed
+hi('DiffChange', { fg = colors.grey })                      -- Vimdiff: lines that are changed
 hi('DiffDelete', { fg = colors.red })                       -- Vimdiff: lines that are removed (dashed line)
 hi('DiffText', { bg = colors.greyblue })                    -- Vimdiff: changed text inside a changed line
 
