@@ -1,0 +1,168 @@
+@define-color noti-border-color rgba(255, 255, 255, 0.15);
+@define-color noti-bg #1e1e21;
+@define-color noti-fg #E5E9F0;
+@define-color noti-bg-hover #2e2e32;
+@define-color noti-close-bg-hover rgba(255, 255, 255, 0.15);
+@define-color noti-urgent #BF616A;
+@define-color bg-selected rgb(0, 128, 255);
+
+:root, *{
+    color: @noti-fg;
+}
+
+.notification-row {
+    outline: none;
+}
+
+.notification {
+    background-color: @noti-bg;
+    border-radius: 12px;
+    margin: 8px 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 1px 3px 1px rgba(0, 0, 0, 0.8),
+        0 2px 6px 2px rgba(0, 0, 0, 0.4);
+    padding: 0;
+}
+
+.critical {
+    border-color: @noti-urgent;
+}
+
+.notification-content {
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-default-action,
+.notification-action {
+    box-shadow: none;
+    background-color: @noti-bg;
+    color: white;
+    padding: 0;
+    margin: 0;
+}
+
+.notification-action > button {
+    font-size: 0.8rem;
+    padding: 5px 7px;
+    margin: 2px;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    background: @noti-bg-hover;
+}
+
+.close-button {
+    background-color: transparent;
+    color: white;
+    text-shadow: none;
+    padding: 0;
+    border-radius: 100%;
+    margin: 12px 6px;
+    box-shadow: none;
+    border: none;
+    min-width: 24px;
+    min-height: 24px;
+}
+
+.close-button:hover {
+    box-shadow: none;
+    background: @noti-close-bg-hover;
+    transition: all 0.15s ease-in-out;
+    border: none;
+}
+
+.top-action-title {
+    color: white;
+    text-shadow: none;
+}
+
+.control-center {
+    background-color: @noti-bg;
+}
+
+.control-center-list {
+    background-color: transparent;
+}
+
+.control-center-list-placeholder {
+    margin: 2rem;
+}
+
+.floating-notifications {
+    background: transparent;
+}
+
+.blank-window {
+    background: transparent;
+}
+
+.widget-title {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.widget-title>button {
+    font-size: initial;
+    color: white;
+    text-shadow: none;
+    background: @noti-bg;
+    border: 1px solid @noti-border-color;
+    box-shadow: none;
+    border-radius: 12px;
+}
+
+.widget-title>button:hover {
+    background: @noti-bg-hover;
+}
+
+.widget-dnd {
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.widget-dnd>switch {
+    font-size: initial;
+    border-radius: 12px;
+    background: @noti-bg;
+    border: 1px solid @noti-border-color;
+    box-shadow: none;
+}
+
+.widget-dnd>switch:checked {
+    background: @bg-selected;
+}
+
+.widget-dnd>switch slider {
+    background: @noti-bg-hover;
+    border-radius: 12px;
+}
+
+.widget-mpris-player {
+    margin: 0;
+}
+
+.widget-mpris-title {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.widget-mpris-subtitle {
+    font-size: 1.1rem;
+}
+
+.widget-backlight {
+    background-color: @noti-bg;
+    padding: 0 8px 0 8px;
+    margin: 8px 8px 2px 8px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+.widget-volume {
+    background-color: @noti-bg;
+    padding: 0 8px 0 8px;
+    margin: 2px 8px 8px 8px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}

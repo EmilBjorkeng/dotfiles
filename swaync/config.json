@@ -1,0 +1,77 @@
+{
+    "ignore-gtk-theme ": true,
+    "positionX": "right",
+    "positionY": "bottom",
+    "control-center-positionX": "right",
+    "control-center-positionY": "top",
+    "control-center-margin-top": 10,
+    "control-center-margin-bottom": 10,
+    "control-center-margin-right": 10,
+    "control-center-margin-left": 10,
+    "control-center-width": 400,
+    "control-center-height": -1,
+    "notification-window-width": 400,
+    "notification-window-height": -1,
+    "fit-to-screen": false,
+    "layer-shell-cover-screen": true,
+    "control-center-exclusive-zone": true,
+    "notification-grouping": true,
+    "relative-timestamps": true,
+    "text-empty": "No notifications",
+
+    "layer-shell": true,
+    "layer": "overlay",
+    "control-center-layer": "overlay",
+    "cssPriority": "user",
+    "notification-body-image-height": 100,
+    "notification-body-image-width": 200,
+    "notification-inline-replies": true,
+    "timeout": 10,
+    "timeout-low": 5,
+    "timeout-critical": 0,
+    "notification-window-width": 450,
+    "keyboard-shortcuts": false,
+    "image-visibility": "always",
+    "transition-time": 200,
+    "hide-on-clear": true,
+    "hide-on-action": true,
+    "script-fail-notify": true,
+
+    "widgets": [
+        "backlight",
+        "volume",
+        "mpris",
+        "title",
+        "dnd",
+        "notifications",
+        "inhibitors"
+    ],
+    "widget-config": {
+        "backlight": {
+            "label": " ",
+            "device": "amdgpu_bl1"
+        },
+        "volume": {
+            "label": " ",
+            "show-per-app": false,
+            "expand": true
+        },
+        "mpris": {
+            "autohide": true
+        },
+        "title": {
+            "text": "Notifications",
+            "clear-all-button": true,
+            "button-text": "Clear All"
+        },
+        "dnd": {
+            "text": "Do Not Disturb"
+        },
+        "notifications": {
+            "vexpand": false
+        },
+        "inhibitors": {
+            "text": "Inhibitors"
+        }
+    }
+}

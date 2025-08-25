@@ -291,6 +291,21 @@ setup_distro() {
             else
                 echo -e "${COLOR}yay${NC} already installed"
             fi
+                local configs=(
+                    "hypr/:$HOME/.config/hypr"
+                    "waybar/:$HOME/.config/waybar"
+                    "swaync/:$HOME/.config/swaync"
+                    "alacritty/:$HOME/.config/alacritty"
+                    "fuzzel/:$HOME/.config/fuzzel"
+                )
+
+                echo -e "\n==> Creating Arch symlinks..."
+
+                for config in "${configs[@]}"; do
+                    local src_file="${config%%:*}"
+                    local dest_file="${config##*:}"
+                    link "$SCRIPT_DIR/$src_file" "$dest_file"
+                done
             ;;
     esac
 }
