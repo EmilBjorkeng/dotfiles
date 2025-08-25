@@ -1,10 +1,13 @@
-local utils = require("line-comment.utils")
+local keymaps = require('line-comment.keymaps')
+local commands = require('line-comment.commands')
 
 local M = {}
 
 -- Rute calls made to this module to the functions
 -- in the other modules
-M.setup = utils.setup
-M.toggle_comment = utils.toggle_comment
+function M.setup()
+    keymaps.setup()
+    commands.setup()
+end
 
 return M
