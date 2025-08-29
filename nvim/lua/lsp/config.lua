@@ -32,10 +32,12 @@ function M.get_config(servers)
                         },
                         disable = {
                             'missing-fields',
+                            'undefined-field',
                         },
                         severity = {
                             ['undefined-global'] = 'Warning',
                             ['lowercase-global'] = 'Information',
+                            ['undefined-field'] = 'Information',
                         },
                     },
                     workspace = {
