@@ -97,7 +97,6 @@ function M.menu_select(button)
         -- Move the cursor to the top
         vim.api.nvim_win_set_cursor(0, {1, 0})
 
-        -- Redraw the menu
         require('filemenu').redraw()
     else
         -- File
@@ -116,6 +115,27 @@ function M.menu_select(button)
             vim.cmd("tabnew " .. vim.fn.fnameescape(path))
         end
     end
+end
+
+local function get_primary_buffer()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_get_config(win).relative == "" then
+            local buf = vim.api.nvim_win_get_buf(win)
+            return buf
+        end
+    end
+    return nil
+end
+
+function M.reset_path()
+    local buf = get_primary_buffer()
+    if not buf then return end
+
+    local path = vim.api.nvim_buf_get_name(buf)
+    local dir = path:match("(.*/)")
+    vim.fn.chdir(dir)
+
+    require('filemenu').redraw()
 end
 
 return M

@@ -1,5 +1,6 @@
 local commands = require("filemenu.commands")
 local menu = require("filemenu.menu")
+local core = require("filemenu.core")
 
 local M = {}
 
@@ -17,5 +18,7 @@ M.setup = function()
 end
 M.redraw = menu.redraw
 M.close_menu = menu.close_menu
+M.menu_select = core.menu_select
+M.reset_path = core.reset_path
 
 return M

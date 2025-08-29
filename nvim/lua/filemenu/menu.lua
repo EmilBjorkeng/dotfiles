@@ -8,6 +8,7 @@ local M = {}
 
 local mappings = {
     q = 'close_menu()',
+    ['.'] = 'reset_path()',
     ['<CR>'] = 'menu_select("CR")',
     s = 'menu_select("s")',
     v = 'menu_select("v")',
@@ -16,7 +17,7 @@ local mappings = {
 
 function M.set_mappings()
     for k,v in pairs(mappings) do
-        vim.api.nvim_buf_set_keymap(buf, 'n', k, ':lua require("filemenu.core").'..v..'<CR>', {
+        vim.api.nvim_buf_set_keymap(buf, 'n', k, ':lua require("filemenu").'..v..'<CR>', {
             nowait = true, noremap = true, silent = true
         })
     end
@@ -82,9 +83,32 @@ function M.redraw()
     vim.bo[buf].modifiable = false
 end
 
+local function cursor_autocmd(bufnr)
+    local original_guicursor = vim.o.guicursor
+    vim.cmd [[ hi FileMenuCursor guibg=#ffffff blend=100 ]]
+
+    vim.api.nvim_create_autocmd("BufEnter", {
+        buffer = bufnr,
+        callback = function()
+            vim.o.guicursor =
+                "n-v:block-FileMenuCursor,i-ve:ver25-FileMenuCursor,r:hor20-FileMenuCursor"
+        end,
+    })
+
+    -- Show cursor on buffer leave
+    vim.api.nvim_create_autocmd("BufLeave", {
+        buffer = bufnr,
+        callback = function()
+            vim.o.guicursor = original_guicursor
+        end,
+    })
+end
+
 function M.create_win()
     start_win = vim.api.nvim_get_current_win()
     buf = vim.api.nvim_create_buf(false, true)
+
+    cursor_autocmd(buf)
 
     -- Get size of the parent window
     local parent_width = vim.api.nvim_win_get_width(0)
@@ -148,7 +172,7 @@ function M.open_menu()
     local dir = path:match("(.*/)")
     vim.fn.chdir(dir)
 
-       if win and vim.api.nvim_win_is_valid(win) then
+    if win and vim.api.nvim_win_is_valid(win) then
         vim.api.nvim_set_current_win(win)
     else
         M.create_win()
