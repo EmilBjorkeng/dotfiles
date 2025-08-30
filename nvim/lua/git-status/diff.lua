@@ -179,7 +179,8 @@ local function manage_segment(line_status, removed_lines, added_lines, new_start
 
         local shared_sign = line_status[line_num]
         if shared_sign == nil then shared_sign = ''
-        elseif shared_sign == 'deleted' then shared_sign = '' -- Edge case where there is a double deleted
+        elseif shared_sign == 'deleted' then return         -- Edge case where there is a double deleted
+        elseif string.find(shared_sign, "_") then return    -- Edge case where there already is a shared sign there
         else shared_sign = '_' .. shared_sign end
 
         line_status[line_num] = 'deleted' .. shared_sign
