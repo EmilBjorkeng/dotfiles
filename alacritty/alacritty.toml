@@ -18,7 +18,7 @@ normal      = { family = "FiraMono Nerd Font", style = "Regular" }
 bold        = { family = "FiraMono Nerd Font", style = "Bold" }
 italic      = { family = "FiraMono Nerd Font", style = "Italic" }
 bold_italic = { family = "FiraMono Nerd Font", style = "Bold Italic" }
-size = 11.5
+size = 11
 offset = { x = 0, y = 0 }
 
 [colors]
