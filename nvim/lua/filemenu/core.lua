@@ -94,10 +94,8 @@ function M.menu_select(button)
         -- Change directory
         vim.fn.chdir(target)
 
-        -- Move the cursor to the top
         vim.api.nvim_win_set_cursor(0, {1, 0})
-
-        require('filemenu').redraw()
+        require('filemenu').reload_menu()
     else
         -- File
         local cwd = vim.loop.cwd()
@@ -135,7 +133,19 @@ function M.reset_path()
     local dir = path:match("(.*/)")
     vim.fn.chdir(dir)
 
-    require('filemenu').redraw()
+    vim.api.nvim_win_set_cursor(0, {1, 0})
+    require('filemenu').reload_menu()
+end
+
+function M.info_lines()
+    local path = vim.loop.cwd()
+    local path_str = path:gsub("^/home/[^/]+", "~")
+
+    if string.sub(path_str, -1) ~= "/" then
+        path_str = path_str .. "/"
+    end
+
+    return { path_str }
 end
 
 return M

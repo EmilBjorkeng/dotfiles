@@ -1,4 +1,5 @@
 local commands = require("filemenu.commands")
+local autocmds = require("filemenu.autocmds")
 local menu = require("filemenu.menu")
 local core = require("filemenu.core")
 
@@ -8,6 +9,7 @@ local M = {}
 -- in the other modules
 M.setup = function()
     commands.setup()
+    autocmds.setup()
 
     -- Set up colors
     vim.api.nvim_set_hl(0, "FilemenuBlue", { fg = "#7498A9" })
@@ -18,6 +20,7 @@ M.setup = function()
 end
 M.redraw = menu.redraw
 M.close_menu = menu.close_menu
+M.reload_menu = menu.reload_menu
 M.menu_select = core.menu_select
 M.reset_path = core.reset_path
 
