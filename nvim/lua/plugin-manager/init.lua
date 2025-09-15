@@ -1,15 +1,21 @@
+local plugins = require("plugins")
 local core = require("plugin-manager.core")
-local commands = require("plugin-manager.commands")
 
 local M = {}
 
--- Rute calls made to this module to the functions
--- in the other modules
-M.setup = function()
-    core.check_for_plugins()
-    core.load_plugins()
+-- Build lookup table by module and name
+local lookup = {}
+for _, plugin in ipairs(plugins) do
+    lookup[plugin.module] = plugin
+    lookup[plugin.name:lower()] = plugin
+end
 
-    commands.setup()
+M.plugins = plugins
+M.lookup = lookup
+M.loaded = {}
+
+M.setup = function()
+    core.load_all()
 end
 
 return M
