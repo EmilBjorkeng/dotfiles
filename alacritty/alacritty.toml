@@ -1,7 +1,7 @@
 [window]
 dimensions = { columns = 0, lines = 0 }
-padding = { x = 6, y = 6 }
-dynamic_padding = false
+padding = { x = 3, y = 3 }
+dynamic_padding = true
 decorations = "None"
 opacity = 1.0
 blur = false
@@ -10,15 +10,15 @@ dynamic_title = true
 class = { instance = "Alacritty", general = "Alacritty" }
 
 [scrolling]
-history = 10000
+history = 24000
 multiplier = 3
 
 [font]
-normal      = { family = "FiraMono Nerd Font", style = "Regular" }
-bold        = { family = "FiraMono Nerd Font", style = "Bold" }
-italic      = { family = "FiraMono Nerd Font", style = "Italic" }
-bold_italic = { family = "FiraMono Nerd Font", style = "Bold Italic" }
-size = 11
+normal      = { family = "FiraCode Nerd Font", style = "Regular" }
+bold        = { family = "FiraCode Nerd Font", style = "Bold" }
+italic      = { family = "FiraCode Nerd Font", style = "Italic" }
+bold_italic = { family = "FiraCode Nerd Font", style = "Bold Italic" }
+size = 10
 offset = { x = 0, y = 0 }
 
 [colors]
