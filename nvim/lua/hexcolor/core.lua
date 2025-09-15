@@ -2,21 +2,28 @@ local M = {}
 
 local ns_id = vim.api.nvim_create_namespace("Hexcolor")
 
-function M.toggle()
-    local bufnr = vim.api.nvim_get_current_buf()
-    local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns_id, 0, -1, {})
+M.enabled = false
 
-    if #marks > 0 then
-        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
-        print("Hex colour highlighting disabled")
-    else
+function M.toggle()
+    if not M.enabled then
+        M.enabled = true
         M.refresh()
-        print("Hex colour highlighting enabled")
+        vim.notify("Hex colour highlighting enabled")
+    else
+        M.enabled = false
+        M.refresh()
+        print("Hex colour highlighting disabled")
     end
 end
 
 function M.refresh()
     local bufnr = vim.api.nvim_get_current_buf()
+
+    if not M.enabled then
+        vim.api.nvim_buf_clear_namespace(bufnr, ns_id, 0, -1)
+        return
+    end
+
     if vim.api.nvim_get_option_value("modifiable", { buf = bufnr }) then
         M.highlight_hexcolors(bufnr)
     end
