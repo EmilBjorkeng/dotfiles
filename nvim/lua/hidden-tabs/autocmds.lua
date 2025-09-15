@@ -1,7 +1,6 @@
 local M = {}
 
 function M.setup()
-    vim.cmd [[highlight HiddenTabs ctermbg=blue guibg=blue]]
     vim.cmd([[
         augroup HiddenTabs
         autocmd!

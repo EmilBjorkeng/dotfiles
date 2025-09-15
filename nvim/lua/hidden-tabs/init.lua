@@ -1,15 +1,23 @@
 local commands = require('hidden-tabs.commands')
 local autocmds = require('hidden-tabs.autocmds')
+local core = require('hidden-tabs.core')
 
 local M = {}
 
--- Rute calls made to this module to the functions
--- in the other modules
-function M.setup()
-    vim.api.nvim_set_hl(0, "HiddenTabs", { bg = "#1a55eb" })
+local config = {
+    autoshow = true
+}
+
+function M.setup(opts)
+    opts = vim.tbl_deep_extend("force", config, opts or {})
+
+    vim.api.nvim_set_hl(0, "HiddenTabs", { bg = "#0022fe" })
 
     autocmds.setup()
     commands.setup()
+
+    core.enabled = opts.autoshow
+    core.refresh()
 end
 
 return M
