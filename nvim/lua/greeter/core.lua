@@ -62,12 +62,6 @@ function M.show()
     utils.table_append(top, menu_lines)
 
     -- Bottom
-    local width = vim.api.nvim_win_get_width(0)
-    local plugin_errors = require('plugin-manager.core').errors
-    local bottom_text = "Plugin Errors: "..#plugin_errors
-    utils.table_append(bottom, {
-        string.rep(" ", width - #bottom_text) .. bottom_text
-    })
 
     -- Combine top and bottom with spacing between
     local height = vim.api.nvim_win_get_height(0)

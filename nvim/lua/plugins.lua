@@ -61,7 +61,6 @@ return {
     {
         name = 'Greeter',
         module = 'greeter',
-        lazy = { event = 'VimEnter' },
         config = true,
         dependencies = { 'filemenu' },
     },
