@@ -43,7 +43,8 @@ local colors = {
     green = '#068515',          -- Green - Good things (Add)
     red = '#d32d33',            -- Red - Bad, but not errorred bad (Delete)
     greyblue = '#394b70',       -- Greyblue - Difftext
-    cyan = '#7498A9',           -- Cyan - Used for directories
+    cyan = '#7498a9',           -- Cyan - Used for directories
+    violet = '#372e47',         -- Violet - Based on subtlehl, used for visual
 }
 
 -- Base colors
@@ -106,8 +107,8 @@ hi('TermCursor', { fg = colors.bg, bg = colors.fg })        -- Terminal cursor
 hi('TermCursorNC', { fg = colors.bg, bg = colors.grey })    -- Terminal cursor (non-focused)
 
 -- Visual and selection
-hi('Visual', { bg = colors.grey })                              -- Visual selection
-hi('VisualNOS', { bg = colors.grey })                           -- Visual selection (not owning selection)
+hi('Visual', { bg = colors.violet })                             -- Visual selection
+hi('VisualNOS', { bg = colors.violet })                          -- Visual selection (not owning selection)
 hi('Search', { fg = colors.black, bg = colors.highlight })      -- Search highlight (/search)
 hi('IncSearch', { fg = colors.black, bg = colors.highlight })   -- Search highlight (while typing)
 hi('CurSearch', { fg = colors.black, bg = colors.highlight })   -- Current search result
