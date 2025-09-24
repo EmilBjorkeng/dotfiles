@@ -115,13 +115,15 @@ end
 
 function M.create_menu()
     original_guicursor = vim.o.guicursor
+    local height = math.min(menu_height, vim.o.lines)
+    local width = math.min(menu_width, vim.o.columns)
 
     -- Get size of the parent window
     local parent_width = vim.api.nvim_win_get_width(0)
     local parent_height = vim.api.nvim_win_get_height(0)
 
-    local result_width = result_width_pct * menu_width / 100
-    local preview_width = preview_width_pct * menu_width / 100
+    local result_width = result_width_pct * width / 100
+    local preview_width = preview_width_pct * width / 100
 
     -- Default opts
     local opts = {
@@ -130,8 +132,8 @@ function M.create_menu()
         anchor = 'NW',
         border = 'single',
         title_pos = 'center',
-        col = (parent_width / 2) - (menu_width/2),
-        row = (parent_height / 2) - (menu_height / 2),
+        col = (parent_width / 2) - (width/2),
+        row = (parent_height / 2) - (height / 2),
     }
 
     -- Create the buffers
@@ -144,7 +146,7 @@ function M.create_menu()
         utils.table_comb(opts, {
             title = 'Results',
             width = result_width - 1,
-            height = menu_height - 3,
+            height = height - 3,
             col = opts.col,
             row = opts.row,
         })
@@ -197,7 +199,7 @@ function M.create_menu()
             width = result_width - 1,
             height = 1,
             col = opts.col,
-            row = opts.row + menu_height - 1,
+            row = opts.row + height - 1,
         })
     )
     win[2] = vim.api.nvim_get_current_win()
@@ -220,7 +222,7 @@ function M.create_menu()
             if col < 2 then
                 vim.api.nvim_win_set_cursor(0, { row, 2 })
             end
-            
+
             M.redraw()
 
             local line_count = vim.api.nvim_buf_line_count(buf[1])
@@ -235,7 +237,7 @@ function M.create_menu()
         utils.table_comb(opts, {
             title = 'Prewiew',
             width = preview_width - 1,
-            height = menu_height,
+            height = height,
             col = opts.col + result_width + 1,
             row = opts.row,
         })
