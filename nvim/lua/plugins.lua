@@ -9,7 +9,7 @@ return {
         name = 'Trailing Spaces',
         module = 'trailing-spaces',
         lazy = { event = { 'BufReadPost', 'BufNewFile' } },
-        config = true,
+        config = false,
     },
     {
         name = 'Filemenu',
@@ -62,6 +62,15 @@ return {
         name = 'Greeter',
         module = 'greeter',
         config = true,
-        dependencies = { 'filemenu' },
+        dependencies = { 'scout' },
+    },
+    {
+        name = 'Scout',
+        module = 'scout',
+        config = function(plugin)
+            require(plugin.module).setup({
+                start_in_search = true,
+            })
+        end,
     },
 }

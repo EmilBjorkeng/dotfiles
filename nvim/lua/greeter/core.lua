@@ -7,7 +7,7 @@ local M = {}
 
 local mappings = {
     e = ':ene<CR>',
-    f = ':File<CR>',
+    f = ':Scout Files<CR>',
     q = ':qa<CR>>',
 }
 
