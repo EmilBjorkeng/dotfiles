@@ -150,9 +150,16 @@ function M.scout_files()
 
         local lines = vim.fn.readfile(path)
 
+        -- Remove newlines from each line
+        for i = 1, #lines do
+            lines[i] = lines[i]:gsub('[\r\n]', '')
+        end
+
         -- Syntax
         local ft = vim.filetype.match({ filename = path })
-        vim.bo[buf].filetype = ft
+        if ft then
+            vim.bo[buf].filetype = ft
+        end
 
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
         vim.bo[buf].modifiable = false
