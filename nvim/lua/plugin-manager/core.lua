@@ -1,4 +1,3 @@
-local plugins = require("plugins")
 local lazy = require("plugin-manager.lazy")
 local loader = require("plugin-manager.loader")
 

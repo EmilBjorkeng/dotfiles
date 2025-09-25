@@ -4,6 +4,8 @@ function M.safe_require(module)
     local ok, mod = pcall(require, module)
     if not ok then
         vim.notify("Failed to load module: " .. module, vim.log.levels.ERROR)
+        vim.notify("Error: " .. mod, vim.log.levels.ERROR)
+        require('plugin-manager').errors[module] = mod
         return nil
     end
     return mod

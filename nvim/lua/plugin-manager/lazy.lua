@@ -29,6 +29,7 @@ function M.register(plugin, loader_fn)
         for _, c in ipairs(cmds) do
             vim.api.nvim_create_user_command(c, function()
                 loader_fn(plugin)
+                vim.cmd(c) -- Run the command again
             end, {})
         end
     end
