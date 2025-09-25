@@ -5,6 +5,14 @@ local M = {}
 local ns_id = vim.api.nvim_create_namespace("ScoutResultHL")
 M.start_in_search = false
 
+local excluded_filetypes = {
+    'png', 'jpg', 'jpeg', 'gif', 'bmp', 'ico', 'webp',
+    'tiff', 'pdf', 'zip', 'tar', 'gz', 'xz', '7z',
+    'rar', 'mp3', 'wav', 'flac', 'ogg', 'mp4', 'mkv',
+    'avi', 'mov', 'webm', 'exe', 'dll', 'so', 'bin',
+    'o', 'a', 'class',
+}
+
 local function levenshtein(a, b)
     local len_a = #a
     local len_b = #b
@@ -43,44 +51,62 @@ end
 local function fuzzy_string_match(query, path)
     local query_lower = query:lower()
     local max_dist = 1      -- Tolerance for the fuzzy check
-    local min_query_len = 2 -- Minimum length the query has to be to be checked
+    local min_query_len = 3 -- Minimum length the query has to be to be fuzzy checked
 
-    local path_trim = path:match("^%s*(.-)%s*$")
-    local parts = vim.split(path_trim, '/')
+    local path_lower = path:lower()
+    local path_trim = path_lower:gsub("/", "")
+    -- local parts = vim.split(path_trim, '/')
 
-    local col = 1
     local matches = {}
 
-    for _, part in ipairs(parts) do
-        local part_lower = part:lower()
-
-        if part ~= '.' and part ~= '' then
-
-            -- Substring match
-            local start_index, end_index = part_lower:find(query_lower, 1, true)
-            if start_index then
-                table.insert(matches, {col + start_index - 1, col + end_index - 1})
-                goto continue
-            end
-
-            -- Skip short queries to not get that a single letter
-            -- matches with every query
-            if #query_lower < min_query_len then
-                goto continue
-            end
-
-            -- Sliding fuzzy matcher
-            for i = 1, #part_lower - #query_lower + 1 do
-                local substring = part_lower:sub(i, i + #query_lower - 1)
-                if levenshtein(query_lower, substring) <= max_dist then
-                    table.insert(matches, {col + i - 1, col + i + #query_lower - 2})
-                    break
-                end
-            end
+    -- Maps the trimed path back to the original one
+    local index_map = {}
+    local stripped_idx = 1
+    for i = 1, #path_lower do
+        if path_lower:sub(i, i) ~= "/" then
+            index_map[stripped_idx] = i
+            stripped_idx = stripped_idx + 1
         end
-        ::continue::
-        col = col + #part + 1  -- Add 1 for the '/'
     end
+
+    -- Substring match (find all occurrences)
+    local start = 1
+    while true do
+        local start_index, end_index = path_trim:find(query_lower, start, true)
+        if not start_index then break end
+
+        -- Map back to original path indices
+        local orig_start = index_map[start_index]
+        local orig_end = index_map[end_index]
+        table.insert(matches, {orig_start, orig_end})
+
+        start = end_index + 1
+    end
+
+    -- Skip to next part if we found at least one exact match
+    if #matches > 0 then
+        goto skip
+    end
+
+    -- Skip short queries to not get that a single letter
+    -- matches with every query
+    if #query_lower < min_query_len then
+        goto skip
+    end
+
+    -- Sliding fuzzy matcher
+    for i = 1, #path_trim - #query_lower + 1 do
+        local substring = path_trim:sub(i, i + #query_lower - 1)
+        if levenshtein(query_lower, substring) <= max_dist then
+            -- map back to original path
+            local orig_start = index_map[i]
+            local orig_end = index_map[i + #query_lower - 1]
+            table.insert(matches, {orig_start, orig_end})
+            break
+        end
+    end
+
+    ::skip::
 
     return matches
 end
@@ -97,7 +123,21 @@ function M.scout_files()
         local files = {}
         for _, path in ipairs(entries) do
             if vim.fn.isdirectory(path) == 0 then
-                table.insert(files, '  ' .. path)
+                -- Exclude files with a filetype in the exclude_filetypes list
+                local ext = path:match('%.([^.]+)$')
+                local exclude = false
+                if ext then
+                    ext = ext:lower()
+                    for _, bad in ipairs(excluded_filetypes) do
+                        if ext == bad then
+                            exclude = true
+                            break
+                        end
+                    end
+                end
+                if not exclude then
+                    table.insert(files, '  ' .. path)
+                end
             end
         end
 
@@ -126,8 +166,8 @@ function M.scout_files()
             local buf_line = fuzzy_files[line] or ''
             for _, match in ipairs(matches) do
                 -- Add 1 to compinsate for the spacing at the front of the result listing
-                local start_col = match[1] + 1
-                local end_col = math.min(match[2] + 2, #buf_line)
+                local start_col = match[1] - 1
+                local end_col = math.min(match[2], #buf_line)
                 vim.api.nvim_buf_set_extmark(buf, ns_id, line - 1, start_col, {
                     end_col = end_col,
                     hl_group = 'ScoutHL'
@@ -141,12 +181,19 @@ function M.scout_files()
     -- Preview
     function(buf, bufs, cursor_pos)
         vim.bo[buf].modifiable = true
+
         -- Get content
         local line = vim.api.nvim_buf_get_lines(bufs[1], cursor_pos, cursor_pos + 1, false)[1]
-        if not line then return end
+        if not line then
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+            return
+        end
 
         local path = line:sub(3)
-        if path == '' then return end
+        if path == '' then
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, {})
+            return
+        end
 
         local lines = vim.fn.readfile(path)
 
