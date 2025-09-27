@@ -2,8 +2,8 @@ local utils = require('scout.utils')
 
 local M = {}
 
-local ns_id = vim.api.nvim_create_namespace("scout")
-local cursor_ns_id = vim.api.nvim_create_namespace("scout_cursor")
+local ns_id = vim.api.nvim_create_namespace('scout')
+local cursor_ns_id = vim.api.nvim_create_namespace('scout_cursor')
 local group = vim.api.nvim_create_augroup('LinkedBuffers', { clear = true })
 local buf = {}
 local win = {}
@@ -26,11 +26,13 @@ local mappings = {
     -- Search
     ['<Esc>'] = {2, function() M.end_search() end},
     ['<Up>'] = {2, function()
+        vim.api.nvim_buf_clear_namespace(buf[1], cursor_ns_id, 0, -1)
         result_cursor_pos = math.max(result_cursor_pos - 1, 0)
         M.virtual_scroll()
         M.redraw()
     end},
     ['<Down>'] = {2, function()
+        vim.api.nvim_buf_clear_namespace(buf[1], cursor_ns_id, 0, -1)
         local line_count = vim.api.nvim_buf_line_count(buf[1])
         result_cursor_pos = math.min(result_cursor_pos + 1, line_count - 1)
         M.virtual_scroll()
@@ -171,8 +173,8 @@ function M.create_menu()
 
             vim.api.nvim_buf_clear_namespace(buf, cursor_ns_id, 0, -1)
             vim.api.nvim_buf_set_extmark(buf, cursor_ns_id, line, 0, {
-                virt_text = { { ">", "Normal" } },
-                virt_text_pos = "overlay",
+                virt_text = { { '>', 'Normal' } },
+                virt_text_pos = 'overlay',
             })
             vim.api.nvim_buf_add_highlight(buf, cursor_ns_id, 'Visual', line, 2, -1)
 
@@ -225,6 +227,8 @@ function M.create_menu()
 
             M.redraw()
 
+            vim.api.nvim_buf_clear_namespace(buf[1], cursor_ns_id, 0, -1)
+
             local line_count = vim.api.nvim_buf_line_count(buf[1])
             result_cursor_pos = math.max(0, math.min(line_count - 1, result_cursor_pos))
             vim.api.nvim_buf_add_highlight(buf[1], cursor_ns_id, 'Visual', result_cursor_pos, 2, -1)
@@ -259,9 +263,9 @@ function M.create_menu()
         })
 
         -- Buffer settings
-        vim.bo[bufnr].buftype = "nofile"
+        vim.bo[bufnr].buftype = 'nofile'
         vim.bo[bufnr].swapfile = false
-        vim.bo[bufnr].bufhidden = "wipe"
+        vim.bo[bufnr].bufhidden = 'wipe'
         vim.api.nvim_buf_set_option(bufnr, 'wrap', false)
 
         M.set_mappings(bufnr)
@@ -270,7 +274,7 @@ function M.create_menu()
     -- Set border color
     for _, w in ipairs(win) do
         if vim.api.nvim_win_is_valid(w) then
-            vim.wo[w].winhl = "Normal:Normal,FloatBorder:Normal,FloatTitle:Normal"
+            vim.wo[w].winhl = 'Normal:Normal,FloatBorder:Normal,FloatTitle:Normal'
         end
     end
 
