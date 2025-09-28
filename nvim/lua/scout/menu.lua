@@ -97,16 +97,21 @@ function M.clear_search()
 end
 
 function M.virtual_scroll()
-    local wins = vim.fn.win_findbuf(buf[1])
+    local win_id = vim.fn.win_findbuf(buf[1])[1]
+    if not win_id then return end
+
     local first_visible = vim.fn.line('w0', win_id)
     local last_visible = vim.fn.line('w$', win_id)
+    local cursor_pos = result_cursor_pos + 1
 
-    if result_cursor_pos < first_visible then
+    if cursor_pos < first_visible then
         -- Scroll up
-        vim.api.nvim_win_set_cursor(wins[1], { first_visible - first_visible - result_cursor_pos, 0 })
-    elseif result_cursor_pos > last_visible then
+        vim.api.nvim_win_set_cursor(win_id, { cursor_pos, 0 })
+    elseif cursor_pos > last_visible then
         -- Scroll down
-        vim.api.nvim_win_set_cursor(wins[1], { first_visible + result_cursor_pos - last_visible, 0 })
+        local new_first = cursor_pos - (last_visible - first_visible) - 1
+        vim.api.nvim_win_set_cursor(win_id, { cursor_pos, 0 })
+        vim.fn.winrestview({ topline = new_first })
     end
 end
 
