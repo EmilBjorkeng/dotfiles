@@ -43,7 +43,9 @@ function M.redraw()
     else
         for module, error in pairs(errors) do
             table.insert(lines, 'Failed to load module: ' .. module)
-            table.insert(lines, 'Error: '.. error)
+            for e in error:gmatch("([^\r\n]+)") do
+                table.insert(lines, e)
+            end
             table.insert(lines, '')
         end
     end
