@@ -35,6 +35,7 @@ function M.load_plugin(plugin, callback)
     local function finish()
         if plugin.repo then
             vim.opt.rtp:append(install_path)
+            vim.cmd('runtime! plugin/**/*.lua')
         end
 
         local mod = M.safe_require(plugin.module)
