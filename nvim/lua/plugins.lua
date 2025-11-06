@@ -1,24 +1,20 @@
 return {
     {
-        name = 'Line Comment',
         module = 'line-comment',
         lazy = { event = 'BufReadPost' },
         config = true,
     },
     {
-        name = 'Trailing Spaces',
         module = 'trailing-spaces',
         lazy = { event = { 'BufReadPost', 'BufNewFile' } },
         config = false,
     },
     {
-        name = 'Filemenu',
         module = 'filemenu',
         lazy = { cmd = 'File' },
         config = true,
     },
     {
-        name = 'LSP',
         module = 'lsp',
         lazy = { ft = {
             'lua', 'c', 'cpp', 'objc', 'objcpp',
@@ -27,9 +23,14 @@ return {
             'javascript', 'typescript'
         }},
         config = true,
+        dependencies = { 'lspconfig' }
     },
     {
-        name = 'Hexcolor',
+        module = 'lspconfig',
+        repo = 'neovim/nvim-lspconfig',
+        config = false,
+    },
+    {
         module = 'hexcolor',
         lazy = { event = { 'BufReadPost', 'BufNewFile' } },
         config = function(plugin)
@@ -39,7 +40,6 @@ return {
         end,
     },
     {
-        name = 'Git status',
         module = 'git-status',
         lazy = { event = { 'BufReadPost', 'BufNewFile' } },
         config = function(plugin)
@@ -49,7 +49,6 @@ return {
         end,
     },
     {
-        name = 'Hidden Tabs',
         module = 'hidden-tabs',
         lazy = { event = { 'BufReadPost', 'BufNewFile' } },
         config = function(plugin)
@@ -59,13 +58,11 @@ return {
         end,
     },
     {
-        name = 'Greeter',
         module = 'greeter',
         config = true,
         dependencies = { 'scout' },
     },
     {
-        name = 'Scout',
         module = 'scout',
         config = function(plugin)
             require(plugin.module).setup({
