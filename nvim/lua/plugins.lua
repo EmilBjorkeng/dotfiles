@@ -70,4 +70,9 @@ return {
             })
         end,
     },
+    {
+        module = 'end-hl-lua',
+        lazy = { ft = { 'lua' } },
+        config = true,
+    },
 }
