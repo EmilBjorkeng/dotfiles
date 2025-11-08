@@ -22,7 +22,6 @@ local menu_height = 35
 
 function M.redraw()
     local pm = require('plugin-manager')
-    local plugins = pm.plugins
     local lookup = pm.lookup
     local loaded = pm.loaded
     local errors = pm.errors
@@ -63,18 +62,17 @@ function M.redraw()
         local status = loaded[plugin]
         local str = ''
 
-        -- Loaded status
-        if status then
+        if errors[plugin] ~= nil then
+            str = str .. ' '
+        elseif status then
             str = str .. ' '
-        elseif errors[plugin] ~= nil then
-            str = str .. ' ' 
         else
             str = str .. '  '
         end
 
         -- Plugin name
         str = str .. plugin
-        
+
         -- Lazy info
         local lazy = lookup[plugin].lazy
         if lazy then
@@ -129,10 +127,10 @@ function M.redraw()
     for _, plugin in ipairs(modules) do
         local status = loaded[plugin]
         local hl_group = nil
-        if status then
-            hl_group = 'PluginCheck'
-        elseif errors[plugin] ~= nil then
+        if errors[plugin] ~= nil then
             hl_group = 'PluginError'
+        elseif status then
+            hl_group = 'PluginCheck'
         end
 
         if hl_group then

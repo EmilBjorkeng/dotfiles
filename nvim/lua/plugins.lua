@@ -5,56 +5,38 @@ return {
         config = true,
     },
     {
-        module = 'trailing-spaces',
-        lazy = { event = { 'BufReadPost', 'BufNewFile' } },
-        config = false,
-    },
-    {
-        module = 'filemenu',
-        lazy = { cmd = 'File' },
-        config = true,
-    },
-    {
         module = 'lsp',
-        lazy = { ft = {
-            'lua', 'c', 'cpp', 'objc', 'objcpp',
-            'python', 'rust',
-            'html', 'css', 'scss', 'less',
-            'javascript', 'typescript'
-        }},
+        lazy = { event = 'BufReadPost' },
         config = true,
-        dependencies = { 'lspconfig' }
-    },
-    {
-        module = 'lspconfig',
-        repo = 'neovim/nvim-lspconfig',
-        config = false,
+        dependencies = {
+            {
+                repo = 'neovim/nvim-lspconfig',
+                name = 'lspconfig'
+            },
+        }
     },
     {
         module = 'hexcolor',
         lazy = { event = { 'BufReadPost', 'BufNewFile' } },
+        opts = {
+            autoshow = true,
+        },
         config = function(plugin)
-            require(plugin.module).setup({
-                autoshow = true,
-            })
+            require(plugin.module).setup(plugin.opts)
         end,
     },
     {
         module = 'git-status',
-        lazy = { event = { 'BufReadPost', 'BufNewFile' } },
-        config = function(plugin)
-            require(plugin.module).setup({
-                autoshow = true,
-            })
-        end,
+        lazy = { event = { 'BufReadPost' } },
     },
     {
         module = 'hidden-tabs',
         lazy = { event = { 'BufReadPost', 'BufNewFile' } },
+        opts = {
+            autoshow = true,
+        },
         config = function(plugin)
-            require(plugin.module).setup({
-                autoshow = true,
-            })
+            require(plugin.module).setup(plugin.opts)
         end,
     },
     {
@@ -64,15 +46,33 @@ return {
     },
     {
         module = 'scout',
+        opts = {
+            start_in_search = true,
+        },
         config = function(plugin)
-            require(plugin.module).setup({
-                start_in_search = true,
-            })
+            require(plugin.module).setup(plugin.opts)
         end,
     },
     {
         module = 'end-hl-lua',
         lazy = { ft = { 'lua' } },
         config = true,
+    },
+    {
+        repo = 'hrsh7th/nvim-cmp',
+        name = 'cmp',
+        config = false,
+        before_deps = true,
+        dependencies = {
+            {
+                repo = 'neovim/nvim-lspconfig',
+                name = 'lspconfig'
+            },
+            'hrsh7th/cmp-nvim-lsp',
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-path',
+            'hrsh7th/cmp-cmdline',
+
+        },
     },
 }

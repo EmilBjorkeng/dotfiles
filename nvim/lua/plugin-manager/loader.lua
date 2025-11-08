@@ -17,28 +17,32 @@ function M.load_plugin(plugin, callback)
     local pm = require("plugin-manager")
     local fn = vim.fn
 
-    -- Already loaded, run callback immediately
-    if pm.loaded[plugin.module] then
+    -- Already loaded
+    if pm.loaded[plugin.require_name] then
         if callback then callback() end
         return
     end
 
-    -- Already loading, queue callback
-    if pm.loading[plugin.module] then
-        pm.waiting[plugin.module] = pm.waiting[plugin.module] or {}
-        table.insert(pm.waiting[plugin.module], callback)
+    -- Already loading
+    if pm.waiting[plugin.require_name] then
+        if callback then
+            table.insert(pm.waiting[plugin.require_name], callback)
+        end
         return
     end
 
-    local install_path = plugin.repo and (fn.stdpath('data') .. '/plugins/' .. plugin.module)
+    pm.waiting[plugin.require_name] = {}
 
-    local function finish()
+    local install_path = plugin.repo and (fn.stdpath('data') .. '/plugins/' .. plugin.repo:match('.*/(.*)'))
+
+    -- Runs after git
+    local function plugin_require()
         if plugin.repo then
             vim.opt.rtp:append(install_path)
             vim.cmd('runtime! plugin/**/*.lua')
         end
 
-        local mod = M.safe_require(plugin.module)
+        local mod = M.safe_require(plugin.require_name)
         if mod then
             if plugin.config == true and mod.setup then
                 mod.setup()
@@ -46,22 +50,20 @@ function M.load_plugin(plugin, callback)
                 plugin.config(plugin)
             end
         end
+        pm.loaded[plugin.require_name] = true
 
-        pm.loaded[plugin.module] = true
-        pm.loading[plugin.module] = nil
-
-        if pm.waiting[plugin.module] then
-            for _, cb in ipairs(pm.waiting[plugin.module]) do
-                if cb then cb() end
+        -- Clear any waiting queue
+        if pm.waiting[plugin.require_name] then
+            for _, func in ipairs(pm.waiting[plugin.require_name]) do
+                func()
             end
         end
-        pm.waiting[plugin.module] = nil
+        pm.waiting[plugin.require_name] = nil
 
         if callback then callback() end
     end
 
     if plugin.repo then
-        pm.loading[plugin.module] = true
         if fn.isdirectory(install_path) == 0 then
             -- Clone repo
             fn.jobstart({
@@ -70,7 +72,7 @@ function M.load_plugin(plugin, callback)
             }, {
                 on_exit = function(_, code)
                     if code == 0 then
-                        vim.schedule(finish)
+                        vim.schedule(plugin_require)
                     else
                         vim.notify('Clone failed: ' .. plugin.repo, vim.log.levels.ERROR)
                     end
@@ -83,46 +85,47 @@ function M.load_plugin(plugin, callback)
             }, {
                 on_exit = function(_, code)
                     if code == 0 then
-                        vim.schedule(finish)
+                        vim.schedule(plugin_require)
                     else
-                        vim.notify('Update failed: ' .. plugin.repo, vim.log.levels.ERROR)
+                        vim.notify('Update failed: ' .. plugin.repo .. ', continuing with un-updated version', vim.log.levels.ERROR)
+                        vim.schedule(plugin_require)
                     end
                 end
             })
         end
     else
-        -- No repo, skip to finish
-        finish()
+        plugin_require()
     end
 end
 
 function M.load_with_deps(plugin)
-    local pm = require("plugin-manager")
+    local deps = plugin.dependencies
 
-    local deps = plugin.dependencies or {}
+    -- Do deps
+    if not deps then
+        M.load_plugin(plugin)
+        return
+    end
+
+    -- Plugin then deps
+    if plugin.before_deps == true then
+        M.load_plugin(plugin, function()
+            for _, dep in ipairs(deps) do
+                M.load_plugin(dep)
+            end
+        end)
+        return
+    end
+
+    -- Deps then plugin
     local waiting = #deps
-
-    -- No dependencies
-    if waiting == 0 then
-        return M.load_plugin(plugin)
-    end
-
-    local function dep_done()
-        waiting = waiting - 1
-        if waiting == 0 then
-            -- All deps done, load main plugin
-            M.load_plugin(plugin)
-        end
-    end
-
     for _, dep in ipairs(deps) do
-        local dep_spec = pm.lookup[dep]
-        if dep_spec then
-            M.load_plugin(dep_spec, dep_done)
-        else
-            vim.notify('Missing dependency: ' .. dep, vim.log.levels.ERROR)
-            return
-        end
+        M.load_plugin(dep, function()
+            waiting = waiting - 1
+            if waiting == 0 then
+                M.load_plugin(plugin)
+            end
+        end)
     end
 end
 
