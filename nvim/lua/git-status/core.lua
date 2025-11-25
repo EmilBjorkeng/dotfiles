@@ -56,7 +56,12 @@ function M.update_git_signs()
 
     for line_num, status in pairs(line_status) do
         local sign_name = get_combined_sign(line_num, status)
-        vim.fn.sign_place(line_num, "git_lines", sign_name, bufnr, { lnum = line_num })
+        if type(sign_name) == "string" and #sign_name > 0 then
+            local line_count = vim.api.nvim_buf_line_count(bufnr)
+            if line_num > 0 and line_num <= line_count then
+                vim.fn.sign_place(0, "git_lines", sign_name, bufnr, { lnum = line_num, priority = 10 })
+            end
+        end
     end
 end
 

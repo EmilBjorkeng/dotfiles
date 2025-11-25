@@ -157,7 +157,7 @@ hi('NonText', { fg = colors.darkgrey })                     -- Placeholder symbo
 hi('EndOfBuffer', { fg = colors.darkgrey })                 -- ~ lines at end of buffer
 hi('SpecialKey', { fg = colors.darkgrey })                  -- Special character (Trailing spaces with :set list)
 hi('Whitespace', { fg = colors.darkgrey })                  -- Whitespace characters (:set list)
-hi('MatchParen', { bg = colors.darkgrey, bold = true })     -- The matching {} when you hover over one
+hi('MatchParen', { bg = colors.violet, bold = true })       -- The matching {} when you hover over one
 hi('Conceal', { fg = colors.grey })                         -- Concealed text
 hi('Todo', { fg = colors.bg, bg = colors.highlight, bold = true })  -- TODO, FIXME
 

@@ -15,4 +15,5 @@ vim.keymap.set('v', '<C-x>', '"+d', { noremap = true, silent = true, nowait = tr
 vim.keymap.set('v', '<TAB>', '>gv', { silent = true, desc = "Indent selection" })       -- Tab to indent selected text
 vim.keymap.set('v', '<S-TAB>', '<gv', { silent = true, desc = "Outdent selection" })    -- Shift+Tab to outdent selected text
 
-require('plugin-manager').setup()
+require('config.filetypes')
+require("config.lazy")
