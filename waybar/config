@@ -22,7 +22,7 @@
         "tooltip": false,
         "all-outputs": true,
         "show-special": false,
-        "on-click": "activate"
+        "on-click": ""
     },
     "hyprland/submap": {
         "format": "{}",
