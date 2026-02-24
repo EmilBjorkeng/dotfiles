@@ -1,0 +1,51 @@
+* {
+    font-family: "Fira Mono";
+}
+
+window {
+    background-color: #1A1A1B;
+    border: 4px solid #24252c;
+    border-radius: 6px;
+}
+
+#outer-box {
+    margin: 5px;
+    background-color: #1A1A1B;
+    border: 4px solid #1A1A1B;
+}
+
+#input {
+    margin: 5px;
+    border: 2px solid #24252c;
+    background-color: #24252c;
+    color: #ffffff;
+}
+
+#inner-box {
+    margin: 5px;
+    background-color: #1A1A1B;
+    border: 2px solid #1A1A1B;
+}
+
+#scroll {
+    margin: 5px;
+    border: 2px solid #1A1A1B;
+    background-color: #1A1A1B;
+}
+
+#text {
+    margin: 5px;
+    border: 2px solid #1A1A1B;
+    background-color: #1A1A1B;
+    color: #afafaf;
+}
+
+#entry:selected {
+    background-color: #4c5358;
+}
+
+#text:selected {
+    color: #ffffff;
+    background-color: #4c5358;
+    border-color: #4c5358;
+}

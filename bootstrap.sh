@@ -296,7 +296,7 @@ setup_distro() {
                     "waybar/:$HOME/.config/waybar"
                     "swaync/:$HOME/.config/swaync"
                     "alacritty/:$HOME/.config/alacritty"
-                    "rofi/:$HOME/.config/rofi"
+                    "wofi/:$HOME/.config/wofi"
                 )
 
                 echo -e "\n==> Creating Arch symlinks..."
