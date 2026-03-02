@@ -31,11 +31,12 @@ end
 
 -- Normalize to #RRGGBB format
 local function hexcolor(hex)
-    if #hex == 4 then -- #RGB -> #RRGGBB
-        return "#" .. hex:sub(2,2):rep(2)
+    if #hex == 3 then -- #RGB -> #RRGGBB
+        print(hex, "-> #" .. hex:sub(1,1):rep(2) .. hex:sub(2,2):rep(2) .. hex:sub(3,3):rep(2))
+        return "#" .. hex:sub(1,1):rep(2)
+                   .. hex:sub(2,2):rep(2)
                    .. hex:sub(3,3):rep(2)
-                   .. hex:sub(4,4):rep(2)
-    elseif #hex == 9 then -- #RRGGBBAA -> #RRGGBB (strip alpha)
+    elseif #hex == 8 then -- #RRGGBBAA -> #RRGGBB (strip alpha)
         return "#" .. hex:sub(2,7)
     end
     return "#" .. hex
