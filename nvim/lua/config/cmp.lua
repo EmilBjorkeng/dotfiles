@@ -5,7 +5,7 @@ vim.api.nvim_set_hl(0, 'CmpGhostText', { fg = '#555555', italic = true })
 
 cmp.setup({
     experimental = {
-        ghost_text = true,
+        ghost_text = false,
     },
     snippet = {
         expand = function(args)
