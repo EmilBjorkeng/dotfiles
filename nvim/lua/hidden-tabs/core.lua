@@ -8,11 +8,11 @@ function M.toggle()
     if not M.enabled then
         M.enabled = true
         M.refresh()
-        vim.notify("Hex colour highlighting enabled")
+        vim.notify("Hidden tabs highlighting enabled")
     else
         M.enabled = false
         M.refresh()
-        print("Hex colour highlighting disabled")
+        print("Hidden tabs highlighting disabled")
     end
 end
 

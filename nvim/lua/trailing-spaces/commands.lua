@@ -1,12 +1,12 @@
-local core = require('hidden-tabs.core')
+local core = require('trailing-spaces.core')
 
 local M = {}
 
 function M.setup()
-        vim.api.nvim_create_user_command('Tabs', function(opts)
+        vim.api.nvim_create_user_command('TrailSpace', function(opts)
         local subcmd = opts.args:lower()
         if subcmd == 'remove' then
-            core.tabs_to_spaces()
+            core.remove_trailing_spaces()
         elseif subcmd == 'toggle' then
             core.toggle()
         else
@@ -25,7 +25,7 @@ function M.setup()
             end
             return matches
         end,
-        desc = 'Tabs commands: Refresh or Toggle',
+        desc = 'TrailSpace commands: Refresh or Toggle',
     })
 end
 
