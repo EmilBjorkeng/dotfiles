@@ -1,4 +1,4 @@
-local cmp = require'cmp'
+local cmp = require('cmp')
 vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
 
 vim.api.nvim_set_hl(0, 'CmpGhostText', { fg = '#555555', italic = true })
