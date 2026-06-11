@@ -107,8 +107,8 @@ hi('TermCursor', { fg = colors.bg, bg = colors.fg })        -- Terminal cursor
 hi('TermCursorNC', { fg = colors.bg, bg = colors.grey })    -- Terminal cursor (non-focused)
 
 -- Visual and selection
-hi('Visual', { bg = colors.violet })                             -- Visual selection
-hi('VisualNOS', { bg = colors.violet })                          -- Visual selection (not owning selection)
+hi('Visual', { bg = colors.violet })                            -- Visual selection
+hi('VisualNOS', { bg = colors.violet })                         -- Visual selection (not owning selection)
 hi('Search', { fg = colors.black, bg = colors.highlight })      -- Search highlight (/search)
 hi('IncSearch', { fg = colors.black, bg = colors.highlight })   -- Search highlight (while typing)
 hi('CurSearch', { fg = colors.black, bg = colors.highlight })   -- Current search result

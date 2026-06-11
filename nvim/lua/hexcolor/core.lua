@@ -32,7 +32,6 @@ end
 -- Normalize to #RRGGBB format
 local function hexcolor(hex)
     if #hex == 3 then -- #RGB -> #RRGGBB
-        print(hex, "-> #" .. hex:sub(1,1):rep(2) .. hex:sub(2,2):rep(2) .. hex:sub(3,3):rep(2))
         return "#" .. hex:sub(1,1):rep(2)
                    .. hex:sub(2,2):rep(2)
                    .. hex:sub(3,3):rep(2)
