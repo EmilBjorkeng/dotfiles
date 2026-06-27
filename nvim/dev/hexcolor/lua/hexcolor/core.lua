@@ -36,7 +36,7 @@ local function hexcolor(hex)
                    .. hex:sub(2,2):rep(2)
                    .. hex:sub(3,3):rep(2)
     elseif #hex == 8 then -- #RRGGBBAA -> #RRGGBB (strip alpha)
-        return '#' .. hex:sub(2,7)
+        return '#' .. hex:sub(1,6)
     end
     return '#' .. hex
 end

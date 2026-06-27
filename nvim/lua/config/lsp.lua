@@ -15,6 +15,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bufopts)
         vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, bufopts)
         vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, bufopts)
+
+        vim.lsp.document_color.enable(false, { bufnr = args.buf })
     end,
 })
 
