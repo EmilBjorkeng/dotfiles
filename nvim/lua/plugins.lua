@@ -1,5 +1,3 @@
-local dev_path = vim.fn.stdpath('config') .. '/lua/'
-
 return {
     {
         'williamboman/mason.nvim',
@@ -25,19 +23,59 @@ return {
         end,
     },
     {
-        'nvim-treesitter/nvim-treesitter',
-        build = ':TSUpdate',
-        event = { 'BufReadPost', 'BufNewFile' },
-        dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
+        "nvim-treesitter/nvim-treesitter",
+        lazy = false,
+        build = ":TSUpdate",
         config = function()
-            require('nvim-treesitter').setup({
-                ensure_installed = {
-                    'lua', 'c', 'python', 'javascript', 'html', 'css',
-                    'bash', 'regex', 'printf', 'markdown', 'json',
-                    'typescript', 'glsl', 'rust',
+            require("config.treesitter").setup()
+        end,
+    },
+    {
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        event = "VeryLazy",
+        config = function()
+            require("config.treesitter-textobjects").setup()
+        end,
+    },
+    {
+        "windwp/nvim-ts-autotag",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+        config = function()
+            require("config.autotag").setup()
+        end,
+    },
+    {
+        'HiPhish/rainbow-delimiters.nvim',
+        event = { 'BufReadPost', 'BufNewFile' },
+        config = function()
+            require('rainbow-delimiters.setup').setup({
+                highlight = {
+                    'RainbowDelimiterYellow',
+                    'RainbowDelimiterViolet',
+                    'RainbowDelimiterRed',
+                    'RainbowDelimiterBlue',
+                    'RainbowDelimiterGreen',
+                    'RainbowDelimiterOrange',
+                    'RainbowDelimiterCyan',
                 },
-                highlight = { enable = true },
             })
         end,
+    },
+    {
+        'windwp/nvim-autopairs',
+        event = 'InsertEnter',
+        dependencies = { 'hrsh7th/nvim-cmp' },
+        config = function()
+            require('nvim-autopairs').setup({
+                check_ts = true,
+            })
+            local cmp_autopairs = require('nvim-autopairs.completion.cmp')
+            local cmp = require('cmp')
+            cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+        end,
+    },
+    {
+        'tpope/vim-sleuth',
     },
 }
