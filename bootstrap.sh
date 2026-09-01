@@ -251,6 +251,7 @@ link_configs() {
         ".zsh_compleations:$HOME/.zsh_compleations"
         ".gitconfig:$HOME/.gitconfig"
         "nvim/:$HOME/.config/nvim"
+        "clangd/:$HOME/.config/clangd"
         "eza/:$HOME/.config/eza"
     )
 
