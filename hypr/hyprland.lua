@@ -13,7 +13,7 @@ hl.env("XCURSOR_SIZE", "18")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
 
 -- Monitor settings
-hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1.2 })
+hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1 })
 hl.monitor({ output = "DP-2", mode = "preferred", position = "auto", scale = 1 })
 
 -- Floating windows
