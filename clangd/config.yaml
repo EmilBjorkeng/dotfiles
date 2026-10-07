@@ -1,7 +1,11 @@
+CompileFlags:
+    Add:
+        - -Iinclude
+---
 If:
     PathMatch: .*\.(cpp|cc|cxx|c\+\+|hpp|hh|hxx|h\+\+)
 CompileFlags:
-    Add: [-std=c++23]
+    Add: [-std=c++26]
 ---
 If:
     PathMatch: .*\.(c|h)
