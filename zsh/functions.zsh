@@ -1,12 +1,23 @@
-restartshell() {
-    source ~/.zshrc
-}
-
 rasm() {
-    nasm -f elf64 -o $1.o $1.asm && ld -o $1 $1.o && ./$1 "${@:2}"
+    local name=${1%.asm}
+    local exe=$name
+    [[ $exe == */* ]] || exe="./$exe"
+    [[ -f "$name.asm" ]] || { print -u2 "rasm: $name.asm not found"; return 1; }
+    nasm -f elf64 -o "$name.o" "$name.asm" &&
+        ld -o "$name" "$name.o" &&
+        rm -f "$name.o" &&
+        "$exe" "${@:2}"
 }
 
 dasm() {
-    nasm -f elf64 -g -o debug.o $1.asm && ld -o debug debug.o &&
-    gdb --silent --args debug "${@:2}" && rm debug.o && rm debug
+    local name=${1%.asm}
+    [[ -f "$name.asm" ]] || { print -u2 "dasm: $name.asm not found"; return 1; }
+    local tmp ret
+    tmp=$(mktemp -d) || return 1
+    nasm -f elf64 -g -F dwarf -o "$tmp/prog.o" "$name.asm" &&
+        ld -o "$tmp/prog" "$tmp/prog.o" &&
+        gdb --silent --args "$tmp/prog" "${@:2}"
+    ret=$?
+    rm -rf "$tmp"
+    return $ret
 }
