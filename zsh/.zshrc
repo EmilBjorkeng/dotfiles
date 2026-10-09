@@ -1,12 +1,20 @@
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
+# Paths
+export ZSH="$HOME/.local/share/oh-my-zsh"
+ZSH_CONFIG="$HOME/.dotfiles/zsh"
+ZSH_COMPDUMP="$HOME/.cache/zsh/zcompdump-$ZSH_VERSION"
+[[ -d ${ZSH_COMPDUMP:h} ]] || mkdir -p ${ZSH_COMPDUMP:h}
+
+ZSH_THEME=""
+
+typeset -U path fpath
+fpath=("$ZSH_CONFIG/completions" $fpath)
 
 # Plugins
 plugins=(
-  git
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  zsh-history-substring-search
+    git
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    zsh-history-substring-search
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -69,7 +77,7 @@ setopt AUTO_LIST                # List choices on ambiguous completion
 setopt AUTO_PARAM_SLASH         # Add slash after directory completions
 
 # Correction
-# setopt CORRECT                  # Command correction
+# setopt CORRECT                # Command correction
 # setopt CORRECT_ALL            # Argument correction
 
 # Other useful options
@@ -78,16 +86,26 @@ setopt NO_BEEP                  # No beeping
 setopt MULTIOS                  # Multiple redirections
 setopt PROMPT_SUBST             # Parameter expansion in prompts
 
-HISTFILE=~/.zsh_history
+HISTFILE="$HOME/.zsh_history"
 HISTSIZE=50000
 SAVEHIST=50000
 
 unset LS_COLORS
 
-# Load and initialize compleation system
-autoload -Uz compinit
-compinit
-
-for file in ~/.zsh_{aliases,functions,completions}; do
+for file in "$ZSH_CONFIG"/{aliases,functions,completions}.zsh; do
     [[ -r "$file" ]] && source "$file"
 done
+
+_jotta_ignore_hidden() {
+    local -a keep pats
+    local out p
+    keep=(.dotfiles .ssh .zsh_history)
+    out=$(jotta-cli ignores list 2>/dev/null) || return
+    pats=(${${(f)out}#*> })
+    for p in ~/.*(N:t); do
+        (( ${keep[(Ie)$p]} )) && continue
+        (( ${pats[(Ie)$p]} )) && continue
+        jotta-cli ignores add --pattern "$p" >/dev/null 2>&1
+    done
+}
+_jotta_ignore_hidden &!

@@ -27,3 +27,4 @@ zstyle ':completion:*:approximate:*' max-errors 1 numeric
 # Kill completion
 zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
+
