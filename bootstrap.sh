@@ -1,10 +1,15 @@
 #!/bin/bash
+
 set -euo pipefail
 IFS=$'\n\t'
 
 # Ensure script is in ~/.dotfiles directory
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 EXPECTED_DIR="$HOME/.dotfiles"
+
+# oh-my-zsh location (must match ZSH in zsh/.zshrc)
+OMZ_DIR="$HOME/.local/share/oh-my-zsh"
+
 COLOR="\e[36m"
 RED="\e[31m"
 NC="\e[0m"
@@ -57,7 +62,8 @@ detect_distro() {
 link() {
     local src="$1"
     local dest="$2"
-    local basename_dest="$(basename "$dest")"
+    local basename_dest
+    basename_dest="$(basename "$dest")"
 
     available=$((available + 1))
 
@@ -80,24 +86,22 @@ link() {
         return 1
     fi
 
-    # Handle existing files/directories
-    if [ -e "$dest" ]; then
-        if [ -L "$dest" ]; then
-            log_warning "$dest is a symlink to $(readlink "$dest"), replacing..."
-            rm "$dest"
-        else
-            # Backup existing file
-            local backup="$dest.backup.$(date +%Y%m%d_%H%M%S)"
-            log_warning "$dest exists, backing up to $backup"
-            if ! mv "$dest" "$backup"; then
-                log_error "Failed to backup $dest"
-                return 1
-            fi
+    # Handle existing files/directories (including broken symlinks)
+    if [ -L "$dest" ]; then
+        log_warning "$dest is a symlink to $(readlink "$dest"), replacing..."
+        rm "$dest"
+    elif [ -e "$dest" ]; then
+        local backup
+        backup="$dest.backup.$(date +%Y%m%d_%H%M%S)"
+        log_warning "$dest exists, backing up to $backup"
+        if ! mv "$dest" "$backup"; then
+            log_error "Failed to backup $dest"
+            return 1
         fi
     fi
 
     # Create symlink
-    if ln -sf "$src" "$dest"; then
+    if ln -s "$src" "$dest"; then
         echo -e "${COLOR}${basename_dest}${NC} linked"
         linked=$((linked + 1))
         return 0
@@ -105,6 +109,17 @@ link() {
         log_error "Failed to link ${basename_dest}"
         return 1
     fi
+}
+
+# Remove symlinks left over from the old flat zsh layout
+cleanup_old_links() {
+    local old
+    for old in .zsh_aliases .zsh_functions .zsh_compleations; do
+        if [ -L "$HOME/$old" ] && [ "$(readlink "$HOME/$old")" = "$SCRIPT_DIR/$old" ]; then
+            rm "$HOME/$old"
+            echo -e "Removed old link ${COLOR}${old}${NC}"
+        fi
+    done
 }
 
 # Install yay AUR helper for Arch Linux
@@ -121,47 +136,46 @@ install_yay() {
     fi
 
     if [ ${#missing_deps[@]} -gt 0 ]; then
-        log_error "Missing dependencies: ${missing_deps[*]}"
-        echo -e "Please install them first: sudo pacman -S ${missing_deps[*]}"
+        local deps
+        deps="$(IFS=' '; echo "${missing_deps[*]}")"
+        log_error "Missing dependencies: $deps"
+        echo -e "Please install them first: sudo pacman -S $deps"
         return 1
     fi
 
     local tmp_dir
-    tmp_dir=$(mktemp -d)
-    local original_dir="$PWD"
+    tmp_dir="$(mktemp -d)"
+    local status=0
 
-    # Cleanup function
-    cleanup_yay() {
-        cd "$original_dir"
-        rm -rf "$tmp_dir"
-    }
-
-    # Set trap for cleanup
-    trap cleanup_yay EXIT
-
-    # Clone and build yay
-    if git clone https://aur.archlinux.org/yay.git "$tmp_dir"; then
-        cd "$tmp_dir"
-        if makepkg -si --noconfirm; then
+    # Clone and build yay in a subshell, so the cd doesn't leak out
+    if git clone https://aur.archlinux.org/yay.git "$tmp_dir/yay"; then
+        if (cd "$tmp_dir/yay" && makepkg -si --noconfirm); then
             echo -e "${COLOR}yay${NC} installed successfully"
-            return 0
         else
             log_error "Failed to build yay"
-            return 1
+            status=1
         fi
     else
         log_error "Failed to clone yay repository"
-        return 1
+        status=1
     fi
+
+    rm -rf "$tmp_dir"
+    return $status
 }
 
 # Install oh-my-zsh
-
-
-
 install_oh_my_zsh() {
-    if [ -d "$HOME/.oh-my-zsh" ]; then
+    if [ -d "$OMZ_DIR" ]; then
         echo -e "${COLOR}oh-my-zsh${NC} already installed"
+        return 0
+    fi
+
+    # Move an install from the old default location
+    if [ -d "$HOME/.oh-my-zsh" ]; then
+        log_warning "Found oh-my-zsh in ~/.oh-my-zsh, moving it to $OMZ_DIR"
+        mkdir -p "$(dirname "$OMZ_DIR")"
+        mv "$HOME/.oh-my-zsh" "$OMZ_DIR"
         return 0
     fi
 
@@ -178,62 +192,63 @@ install_oh_my_zsh() {
         return 1
     fi
 
-    # Download and install oh-my-zsh
-    local install_script
+    # Download the installer
+    local url="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+    local install_script=""
     if command -v curl &> /dev/null; then
-        install_script=$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
+        install_script="$(curl -fsSL "$url")" || install_script=""
     else
-        install_script=$(wget -qO- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
+        install_script="$(wget -qO- "$url")" || install_script=""
     fi
 
-    if [ -n "$install_script" ]; then
-        # Run the installer in unattended mode
-        sh -c "$install_script" "" --unattended
-        if [ $? -eq 0 ]; then
-            echo -e "${COLOR}oh-my-zsh${NC} installed successfully"
-            return 0
-        else
-            log_error "Failed to install oh-my-zsh"
-            return 1
-        fi
-    else
+    if [ -z "$install_script" ]; then
         log_error "Failed to download oh-my-zsh installer"
+        return 1
+    fi
+
+    # --keep-zshrc stops the installer from replacing the linked .zshrc
+    mkdir -p "$(dirname "$OMZ_DIR")"
+    if ZSH="$OMZ_DIR" sh -c "$install_script" "" --unattended --keep-zshrc; then
+        echo -e "${COLOR}oh-my-zsh${NC} installed successfully"
+        return 0
+    else
+        log_error "Failed to install oh-my-zsh"
         return 1
     fi
 }
 
-# Install oh-my-zsh plugins
+# Install or update oh-my-zsh plugins
 install_zsh_plugins() {
-    local zsh_custom="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
-    local plugins_dir="$zsh_custom/plugins"
+    local plugins_dir="${ZSH_CUSTOM:-$OMZ_DIR/custom}/plugins"
 
     echo -e "\n==> Installing ${COLOR}oh-my-zsh${NC} plugins..."
 
-    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    if [ ! -d "$OMZ_DIR" ]; then
         log_warning "${COLOR}oh-my-zsh${NC} not found, skipping plugin installation"
         return 1
     fi
 
     mkdir -p "$plugins_dir"
 
-    # Array of plugins to install
+    # name:url (the url is everything after the first colon)
     local plugins=(
         "zsh-autosuggestions:https://github.com/zsh-users/zsh-autosuggestions"
         "zsh-syntax-highlighting:https://github.com/zsh-users/zsh-syntax-highlighting"
         "zsh-history-substring-search:https://github.com/zsh-users/zsh-history-substring-search"
     )
 
+    local plugin_info plugin_name plugin_url plugin_dir
     for plugin_info in "${plugins[@]}"; do
-        local plugin_name="${plugin_info%%:*}"
-        local plugin_url="${plugin_info##*:}"
-        local plugin_dir="$plugins_dir/$plugin_name"
+        plugin_name="${plugin_info%%:*}"
+        plugin_url="${plugin_info#*:}"
+        plugin_dir="$plugins_dir/$plugin_name"
 
         if [ -d "$plugin_dir" ]; then
             echo -e "${COLOR}${plugin_name}${NC} already installed, updating..."
-            cd "$plugin_dir" && git pull
+            git -C "$plugin_dir" pull --quiet || log_warning "Failed to update ${plugin_name}"
         else
-            echo -e "Installing ${COLOR}$plugin_name${NC}..."
-            if git clone "$plugin_url" "$plugin_dir"; then
+            echo -e "Installing ${COLOR}${plugin_name}${NC}..."
+            if git clone --quiet "$plugin_url" "$plugin_dir"; then
                 echo -e "${COLOR}${plugin_name}${NC} installed"
             else
                 log_error "Failed to install ${COLOR}${plugin_name}${NC}"
@@ -245,10 +260,9 @@ install_zsh_plugins() {
 # Link configuration files
 link_configs() {
     local configs=(
-        ".zshrc:$HOME/.zshrc"
-        ".zsh_aliases:$HOME/.zsh_aliases"
-        ".zsh_functions:$HOME/.zsh_functions"
-        ".zsh_compleations:$HOME/.zsh_compleations"
+        "zsh/.zshenv:$HOME/.zshenv"
+        "zsh/.zprofile:$HOME/.zprofile"
+        "zsh/.zshrc:$HOME/.zshrc"
         ".gitconfig:$HOME/.gitconfig"
         "nvim/:$HOME/.config/nvim"
         "clangd/:$HOME/.config/clangd"
@@ -256,24 +270,25 @@ link_configs() {
     )
 
     echo -e "\n==> Creating symlinks..."
-
-    local zsh_was_linked=false
+    local zshrc_linked=false
+    local config src_file dest_file
     for config in "${configs[@]}"; do
-        local src_file="${config%%:*}"
-        local dest_file="${config##*:}"
-
+        src_file="${config%%:*}"
+        dest_file="${config#*:}"
         if link "$SCRIPT_DIR/$src_file" "$dest_file"; then
-            if [[ "$src_file" == ".zshrc" ]]; then
-                zsh_was_linked=true
+            if [ "$src_file" = "zsh/.zshrc" ]; then
+                zshrc_linked=true
             fi
         fi
     done
 
-    # Install zsh plugins if .zshrc was newly linked
-    if $zsh_was_linked; then
-        # Install oh-my-zsh first ig not present
-        install_oh_my_zsh
-        install_zsh_plugins
+    cleanup_old_links
+
+    # oh-my-zsh and plugins are only needed when the zsh config is in place
+    if $zshrc_linked; then
+        if install_oh_my_zsh; then
+            install_zsh_plugins || true
+        fi
     fi
 }
 
@@ -292,21 +307,22 @@ setup_distro() {
             else
                 echo -e "${COLOR}yay${NC} already installed"
             fi
-                local configs=(
-                    "hypr/:$HOME/.config/hypr"
-                    "waybar/:$HOME/.config/waybar"
-                    "swaync/:$HOME/.config/swaync"
-                    "alacritty/:$HOME/.config/alacritty"
-                    "wofi/:$HOME/.config/wofi"
-                )
 
-                echo -e "\n==> Creating Arch symlinks..."
+            local configs=(
+                "hypr/:$HOME/.config/hypr"
+                "waybar/:$HOME/.config/waybar"
+                "swaync/:$HOME/.config/swaync"
+                "alacritty/:$HOME/.config/alacritty"
+                "wofi/:$HOME/.config/wofi"
+            )
 
-                for config in "${configs[@]}"; do
-                    local src_file="${config%%:*}"
-                    local dest_file="${config##*:}"
-                    link "$SCRIPT_DIR/$src_file" "$dest_file"
-                done
+            echo -e "\n==> Creating Arch symlinks..."
+            local config src_file dest_file
+            for config in "${configs[@]}"; do
+                src_file="${config%%:*}"
+                dest_file="${config#*:}"
+                link "$SCRIPT_DIR/$src_file" "$dest_file" || true
+            done
             ;;
     esac
 }
@@ -319,7 +335,7 @@ main() {
     update_repository "$@"
 
     local distro
-    distro=$(detect_distro)
+    distro="$(detect_distro)"
     echo -e "Detected distribution: ${COLOR}${distro}${NC}"
 
     setup_distro "$distro"
