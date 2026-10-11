@@ -4,6 +4,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
     callback = function(args)
         local bufnr = args.buf
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
 
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
@@ -15,6 +16,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bufopts)
         vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, bufopts)
         vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, bufopts)
+
+        if client and client:supports_method('textDocument/inlayHint') then
+            vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+
+            vim.keymap.set('n', '<leader>ih', function()
+                local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr })
+                vim.lsp.inlay_hint.enable(not enabled, { bufnr = bufnr })
+            end, vim.tbl_extend('force', bufopts, { desc = 'Toggle inlay hints' }))
+        end
 
         vim.lsp.document_color.enable(false, { bufnr = args.buf })
     end,
@@ -77,7 +87,7 @@ local custom_settings = {
         },
     },
     rust_analyzer = {
-        cmd          = { os.getenv('HOME') .. '/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-analyzer' },
+        cmd          = { 'rust-analyzer' },
         filetypes    = { 'rust' },
         root_markers = { 'Cargo.toml', 'Cargo.lock' },
         settings = {
@@ -87,7 +97,7 @@ local custom_settings = {
                     command = 'clippy',
                 },
                 cargo = {
-                    allFeatures = true,
+                    features = 'all',
                 },
                 inlayHints = {
                     bindingModeHints       = { enable = true },
@@ -96,12 +106,9 @@ local custom_settings = {
                     typeHints              = { enable = true },
                     closureReturnTypeHints = { enable = 'always' },
                 },
-                procMacro = {
-                    enable = true,
-                },
                 imports = {
                     granularity = { group = 'module' },
-                    prefix      = 'self',
+                    prefix      = 'plain',
                 },
             },
         },
@@ -113,13 +120,13 @@ local custom_settings = {
         settings = {
             typescript = {
                 inlayHints = {
-                    includeInlayParameterNameHints      = 'all',
+                    includeInlayParameterNameHints         = 'all',
                     includeInlayFunctionParameterTypeHints = true,
                 },
             },
             javascript = {
                 inlayHints = {
-                    includeInlayParameterNameHints      = 'all',
+                    includeInlayParameterNameHints         = 'all',
                     includeInlayFunctionParameterTypeHints = true,
                 },
             },
@@ -182,7 +189,7 @@ function M.setup()
     vim.api.nvim_create_user_command('LspRestart', function()
         local clients = vim.lsp.get_clients()
         for _, client in ipairs(clients) do
-            client.stop()
+            client:stop()
             vim.defer_fn(function()
                 vim.lsp.enable(client.name)
             end, 500)
@@ -191,7 +198,7 @@ function M.setup()
 
     vim.api.nvim_create_user_command('LspStop', function()
         for _, client in ipairs(vim.lsp.get_clients()) do
-            client.stop()
+            client:stop()
         end
     end, {})
 
@@ -234,3 +241,4 @@ function M.setup()
 end
 
 return M
+
