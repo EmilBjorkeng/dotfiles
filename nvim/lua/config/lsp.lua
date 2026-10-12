@@ -1,32 +1,37 @@
 local M = {}
 
 vim.api.nvim_create_autocmd('LspAttach', {
+    group = vim.api.nvim_create_augroup('UserLspConfig', { clear = true }),
     callback = function(args)
         local bufnr = args.buf
         local bufopts = { noremap = true, silent = true, buffer = bufnr }
         local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-        vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-        vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
-        vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-        vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-        vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-        vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-        vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bufopts)
-        vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, bufopts)
-        vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, bufopts)
+        local function map(lhs, rhs, desc)
+            vim.keymap.set('n', lhs, rhs, vim.tbl_extend('force', bufopts, { desc = 'LSP: ' .. desc }))
+        end
+
+        map('gd', vim.lsp.buf.definition, 'Go to definition')
+        map('K', vim.lsp.buf.hover, 'Hover documentation')
+        map('<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
+        map('<leader>ca', vim.lsp.buf.code_action, 'Code action')
+        map('gr', vim.lsp.buf.references, 'References')
+        map('gD', vim.lsp.buf.declaration, 'Go to declaration')
+        map('gi', vim.lsp.buf.implementation, 'Go to implementation')
+        map('gt', vim.lsp.buf.type_definition, 'Go to type definition')
+        map('<leader>e', vim.diagnostic.open_float, 'Show diagnostic')
+        map('<leader>q', vim.diagnostic.setloclist, 'Diagnostics to location list')
 
         if client and client:supports_method('textDocument/inlayHint') then
             vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
 
-            vim.keymap.set('n', '<leader>ih', function()
+            map('<leader>ih', function()
                 local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr })
                 vim.lsp.inlay_hint.enable(not enabled, { bufnr = bufnr })
-            end, vim.tbl_extend('force', bufopts, { desc = 'Toggle inlay hints' }))
+            end, 'Toggle inlay hints')
         end
 
-        vim.lsp.document_color.enable(false, { bufnr = args.buf })
+        vim.lsp.document_color.enable(false, { bufnr = bufnr })
     end,
 })
 

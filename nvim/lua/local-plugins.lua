@@ -79,4 +79,12 @@ return {
             require('end-hl-lua').setup()
         end,
     },
+    {
+        dir = dev_path .. 'keylist',
+        name = 'keylist',
+        cmd = 'Keys',
+        config = function()
+            require('keylist').setup()
+        end,
+    },
 }
