@@ -40,7 +40,10 @@ local mappings = {
     end},
 
     -- Both
-    ['<CR>'] = {{1, 2}, function() run_func(buf, result_cursor_pos) end},
+    ['<CR>']  = {{1, 2}, function() run_func(buf, result_cursor_pos, 'edit') end},
+    ['<C-v>'] = {{1, 2}, function() run_func(buf, result_cursor_pos, 'vsplit') end},
+    ['<C-x>'] = {{1, 2}, function() run_func(buf, result_cursor_pos, 'split') end},
+    ['<C-d>'] = {{1, 2}, function() run_func(buf, result_cursor_pos, 'delete') end},
 }
 
 function M.set_mappings(bufnr)
@@ -116,11 +119,16 @@ function M.virtual_scroll()
 end
 
 function M.redraw()
-    callbacks[1](buf[1], buf)                    -- Result
-    callbacks[2](buf[3], buf, result_cursor_pos) -- Preview
+    callbacks[1](buf[1], buf)
+
+    local line_count = vim.api.nvim_buf_line_count(buf[1])
+    result_cursor_pos = math.max(0, math.min(line_count - 1, result_cursor_pos))
+
+    callbacks[2](buf[3], buf, result_cursor_pos)
 end
 
 function M.create_menu()
+    result_cursor_pos = 0
     original_guicursor = vim.o.guicursor
     local height = math.min(menu_height, vim.o.lines)
     local width = math.min(menu_width, vim.o.columns)

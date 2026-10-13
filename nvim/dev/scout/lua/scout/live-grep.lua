@@ -172,19 +172,15 @@ function M.scout()
     end,
 
     -- Run
-    function(_, cursor_pos)
-        -- Get content
+    function(_, cursor_pos, how)
         local pars = parsed[cursor_pos + 1]
         if not pars then return end
 
-        local path = pars.filename
-        local line_num = pars.lnum
-
-        vim.cmd('stopinsert')
-        require('scout.menu').close_menu()
-        vim.cmd('edit ' .. vim.fn.fnameescape(path))
-
-        vim.api.nvim_win_set_cursor(0, { line_num, 0 })
+        require('scout.open').open(pars.filename, {
+            how = how,
+            lnum = pars.lnum,
+            col = pars.col,
+        })
     end,
 
     })

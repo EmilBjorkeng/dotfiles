@@ -46,6 +46,7 @@ function M.scout()
             fuzzy_files = files
         end
 
+        vim.api.nvim_buf_clear_namespace(buf, ns_id, 0, -1)
         vim.api.nvim_buf_set_lines(buf, 0, -1, false, fuzzy_files)
 
         -- Highlight fuzzy found words
@@ -100,16 +101,14 @@ function M.scout()
     end,
 
     -- Run
-    function(bufs, cursor_pos)
+    function(bufs, cursor_pos, how)
         local line = vim.api.nvim_buf_get_lines(bufs[1], cursor_pos, cursor_pos + 1, false)[1]
         if not line then return end
 
         local path = line:sub(3)
         if path == '' or not file_exists(path) then return end
 
-        vim.cmd('stopinsert')
-        require('scout.menu').close_menu()
-        vim.cmd('edit ' .. vim.fn.fnameescape(path))
+        require('scout.open').open(path, { how = how })
     end,
 
     })

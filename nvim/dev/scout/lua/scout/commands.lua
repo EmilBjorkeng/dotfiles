@@ -5,7 +5,8 @@ local M = {}
 local subcmds = {
     {'Files', 'files'},
     {'Live_Grep', 'live-grep'},
-    {'Oldfiles', 'oldfiles'}
+    {'Oldfiles', 'oldfiles'},
+    {'Buffers', 'buffers'},
 }
 
 function M.setup()
