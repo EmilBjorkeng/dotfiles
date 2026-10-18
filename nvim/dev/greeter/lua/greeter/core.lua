@@ -8,7 +8,7 @@ local M = {}
 local mappings = {
     e = ':ene<CR>',
     f = ':Scout Files<CR>',
-    q = ':qa<CR>>',
+    q = ':qa<CR>',
 }
 
 local menu = {
