@@ -43,6 +43,7 @@ local mappings = {
     ['<C-v>'] = {{1, 2}, function() run_func(buf, result_cursor_pos, 'vsplit') end},
     ['<C-x>'] = {{1, 2}, function() run_func(buf, result_cursor_pos, 'split') end},
     ['<C-d>'] = {{1, 2}, function() run_func(buf, result_cursor_pos, 'delete') end},
+    ['<C-n>'] = {{1, 2}, function() run_func(buf, result_cursor_pos, 'create') end},
 }
 
 function M.set_mappings(bufnr)

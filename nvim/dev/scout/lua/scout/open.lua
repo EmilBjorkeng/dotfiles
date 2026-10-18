@@ -54,4 +54,23 @@ function M.open(path, opts)
     end
 end
 
+-- Create a file/folder
+function M.create(path)
+    path = vim.trim(path)
+    if path == '' then
+        vim.notify('Type a path in the search bar first', vim.log.levels.WARN)
+        return
+    end
+
+    -- A trailing slash means folder (not file)
+    if path:sub(-1) == '/' then
+        vim.fn.mkdir(path, 'p')
+        vim.notify('Created folder ' .. path)
+        return
+    end
+
+    vim.fn.mkdir(vim.fn.fnamemodify(path, ':h'), 'p')
+    M.open(path, { how = 'edit' })
+end
+
 return M

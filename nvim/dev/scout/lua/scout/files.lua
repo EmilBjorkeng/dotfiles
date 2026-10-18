@@ -215,6 +215,13 @@ function M.scout()
 
     -- Run
     function(bufs, cursor_pos, how)
+        -- Create a new file from whatever is typed in the search bar
+        if how == 'create' then
+            local search = vim.api.nvim_buf_get_lines(bufs[2], 0, 1, false)[1]:sub(3)
+            require('scout.open').create(search)
+            return
+        end
+
         local line = vim.api.nvim_buf_get_lines(bufs[1], cursor_pos, cursor_pos + 1, false)[1]
         if not line then return end
 
