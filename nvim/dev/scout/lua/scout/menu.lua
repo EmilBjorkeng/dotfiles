@@ -15,7 +15,6 @@ local result_cursor_pos = 0
 local menu_height = 30
 local menu_width = 125
 local result_width_pct = 40
-local preview_width_pct = 60
 
 local mappings = {
     -- Result
@@ -130,15 +129,11 @@ end
 function M.create_menu()
     result_cursor_pos = 0
     original_guicursor = vim.o.guicursor
-    local height = math.min(menu_height, vim.o.lines)
-    local width = math.min(menu_width, vim.o.columns)
+    local height = math.min(menu_height, vim.o.lines - 4)
+    local width = math.min(menu_width, vim.o.columns - 2)
 
-    -- Get size of the parent window
-    local parent_width = vim.api.nvim_win_get_width(0)
-    local parent_height = vim.api.nvim_win_get_height(0)
-
-    local result_width = result_width_pct * width / 100
-    local preview_width = preview_width_pct * width / 100
+    local result_width = math.floor(result_width_pct * width / 100)
+    local preview_width = width - result_width
 
     -- Default opts
     local opts = {
@@ -147,8 +142,8 @@ function M.create_menu()
         anchor = 'NW',
         border = 'single',
         title_pos = 'center',
-        col = (parent_width / 2) - (width/2),
-        row = (parent_height / 2) - (height / 2),
+        col = math.floor((vim.o.columns - width) / 2),
+        row = math.floor((vim.o.lines - height) / 2),
     }
 
     -- Create the buffers

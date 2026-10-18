@@ -1,5 +1,6 @@
 local menu = require('scout.menu')
 local scout_files = require('scout.files')
+local utils = require('scout.utils')
 
 local M = {}
 
@@ -23,6 +24,7 @@ local function collect_buffers()
                 path = info.name,
                 name = vim.fn.fnamemodify(info.name, ':~:.'),
                 modified = info.changed == 1,
+                visible = #vim.fn.win_findbuf(info.bufnr) > 0,
             })
         end
     end
@@ -51,7 +53,9 @@ function M.scout()
             end
             if search == '' or #finds > 0 then
                 table.insert(shown, b)
-                table.insert(lines, line .. (b.modified and ' [+]' or ''))
+                table.insert(lines, line
+                    .. (b.modified and ' [+]' or '')
+                    .. (b.visible and ' [w]' or ''))
                 table.insert(highlights, finds)
             end
         end
@@ -110,11 +114,7 @@ function M.scout()
         if not b then return end
 
         if how == 'delete' then
-            if vim.bo[b.bufnr].modified then
-                vim.notify('Unsaved changes in ' .. b.name, vim.log.levels.WARN)
-                return
-            end
-            pcall(vim.api.nvim_buf_delete, b.bufnr, {})
+            if not utils.delete_buffer(b.bufnr) then return end
             for i, entry in ipairs(buffers) do
                 if entry.bufnr == b.bufnr then
                     table.remove(buffers, i)
