@@ -49,6 +49,13 @@ local custom_settings = {
         root_markers = { '.luarc.json', '.git' },
         settings = {
             Lua = {
+                runtime = {
+                    version = 'LuaJIT',
+                },
+                workspace = {
+                    checkThirdParty = false,
+                    library = { vim.env.VIMRUNTIME },
+                },
                 diagnostics = {
                     globals = { 'vim' },
                 },
