@@ -32,7 +32,7 @@ function M.open(path, opts)
     end
 
     -- Reuses the existing buffer if the file is already open
-    local bufnr = vim.fn.bufadd(vim.fn.fnamemodify(path, ':p'))
+    local bufnr = vim.fn.bufadd(vim.fn.fnamemodify(path, ':p:.'))
     vim.bo[bufnr].buflisted = true
 
     vim.cmd("normal! m'")
