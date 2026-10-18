@@ -27,6 +27,7 @@ map('n', '<leader>ws', '<cmd>split<cr>', { desc = 'Split horizontally' })
 map('n', '<leader>wc', '<cmd>close<cr>', { desc = 'Close window' })
 map('n', '<leader>wo', '<cmd>only<cr>', { desc = 'Close other windows' })
 map('n', '<leader>w=', '<C-w>=', { desc = 'Equalise windows' })
+map('n', '<leader>wx', '<C-w>x', { desc = 'Swap with next window' })
 
 map('n', '<C-h>', '<C-w>h', { desc = 'Window left' })
 map('n', '<C-j>', '<C-w>j', { desc = 'Window down' })
@@ -38,3 +39,5 @@ map('n', '<C-Down>', '<cmd>resize -2<cr>', { desc = 'Shorter window' })
 map('n', '<C-Left>', '<cmd>vertical resize -2<cr>', { desc = 'Narrower window' })
 map('n', '<C-Right>', '<cmd>vertical resize +2<cr>', { desc = 'Wider window' })
 
+-- Searching
+map('n', '<Esc>', '<cmd>nohlsearch<cr><Esc>', { desc = 'Clear search highlight' })
