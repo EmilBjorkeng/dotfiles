@@ -12,7 +12,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
         end
 
         map('gd', vim.lsp.buf.definition, 'Go to definition')
-        map('K', vim.lsp.buf.hover, 'Hover documentation')
+        map('K', function()
+            vim.lsp.buf.hover({ border = 'rounded' })
+        end, 'Hover documentation')
         map('<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
         map('<leader>ca', vim.lsp.buf.code_action, 'Code action')
         map('gr', vim.lsp.buf.references, 'References')
@@ -39,14 +41,14 @@ local servers = {
     'lua_ls', 'clangd', 'pyright',
     'rust_analyzer', 'html', 'cssls',
     'ts_ls', 'jsonls', 'bashls',
-    'marksman',
+    'marksman', 'taplo',
 }
 
 local custom_settings = {
     lua_ls = {
         cmd          = { 'lua-language-server' },
         filetypes    = { 'lua' },
-        root_markers = { '.luarc.json', '.git' },
+        root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
         settings = {
             Lua = {
                 runtime = {
@@ -54,7 +56,7 @@ local custom_settings = {
                 },
                 workspace = {
                     checkThirdParty = false,
-                    library = { vim.env.VIMRUNTIME },
+                    library = { vim.env.VIMRUNTIME, '${3rd}/luv/library' },
                 },
                 diagnostics = {
                     globals = { 'vim' },
@@ -67,7 +69,6 @@ local custom_settings = {
                         quote_style  = 'single',
                     }
                 },
-                spell      = { 'en_gb', 'no_nb' },
                 telemetry  = { enable = false },
             }
         },
@@ -78,17 +79,16 @@ local custom_settings = {
             'clangd',
             '--background-index',
             '--clang-tidy',
-            '--cross-file-rename',
             '--completion-style=detailed',
             '--header-insertion=never',
             '--all-scopes-completion',
         },
-        root_markers = { 'compile_commands.json', '.git', 'CMakeLists.txt' },
+        root_markers = {'.clangd', 'compile_flags.txt', '.git', 'CMakeLists.txt' },
     },
     pyright = {
         cmd          = { 'pyright-langserver', '--stdio' },
         filetypes    = { 'python' },
-        root_markers = { 'pyproject.toml', 'setup.py', '.git' },
+        root_markers = { 'pyproject.toml', 'setup.py', '.git', 'pyrightconfig.json' },
         settings = {
             python = {
                 analysis = {
@@ -101,7 +101,7 @@ local custom_settings = {
     rust_analyzer = {
         cmd          = { 'rust-analyzer' },
         filetypes    = { 'rust' },
-        root_markers = { 'Cargo.toml', 'Cargo.lock' },
+        root_markers = { 'Cargo.lock', 'Cargo.toml', '.git' },
         settings = {
             ['rust-analyzer'] = {
                 checkOnSave = true,
@@ -149,25 +149,63 @@ local custom_settings = {
         filetypes    = { 'sh', 'bash' },
         root_markers = { '.git' },
     },
-    cssls = {
-        cmd          = { 'vscode-css-language-server', '--stdio' },
-        filetypes    = { 'css', 'scss', 'less' },
-        root_markers = { 'package.json', '.git' },
-    },
     html = {
         cmd          = { 'vscode-html-language-server', '--stdio' },
         filetypes    = { 'html' },
         root_markers = { 'package.json', '.git' },
+        init_options = {
+            provideFormatter     = true,
+            embeddedLanguages    = { css = true, javascript = true },
+            configurationSection = { 'html', 'css', 'javascript' },
+        },
+    },
+    cssls = {
+        cmd          = { 'vscode-css-language-server', '--stdio' },
+        filetypes    = { 'css', 'scss', 'less' },
+        root_markers = { 'package.json', '.git' },
+        init_options = { provideFormatter = true },
     },
     jsonls = {
         cmd          = { 'vscode-json-language-server', '--stdio' },
         filetypes    = { 'json', 'jsonc' },
         root_markers = { '.git' },
+        init_options = { provideFormatter = true },
+        settings = {
+            json = {
+                validate = { enable = true },
+            },
+        },
     },
     marksman = {
         cmd          = { 'marksman', 'server' },
         filetypes    = { 'markdown' },
         root_markers = { '.git', '.marksman.toml' },
+    },
+    taplo = {
+        cmd          = { 'taplo', 'lsp', 'stdio' },
+        filetypes    = { 'toml' },
+        root_markers = { '.taplo.toml', 'taplo.toml', '.git' },
+        settings = {
+            evenBetterToml = {
+                schema = {
+                    enabled  = true,
+                    catalogs = { 'https://www.schemastore.org/api/json/catalog.json' },
+                },
+                formatter = {
+                    indentString       = '    ',
+                    indentTables       = false,
+                    indentEntries      = false,
+                    alignEntries       = false,
+                    alignComments      = true,
+                    arrayTrailingComma = true,
+                    arrayAutoExpand    = true,
+                    arrayAutoCollapse  = true,
+                    columnWidth        = 80,
+                    reorderKeys        = false,
+                    trailingNewline    = true,
+                },
+            },
+        },
     },
 }
 
@@ -235,7 +273,7 @@ function M.setup()
     end, {})
 
     vim.api.nvim_create_user_command('LspLog', function()
-        vim.cmd('edit ' .. vim.lsp.get_log_path())
+        vim.cmd.edit(vim.lsp.log.get_filename())
     end, {})
 
     for _, server in ipairs(servers) do
@@ -253,4 +291,3 @@ function M.setup()
 end
 
 return M
-
