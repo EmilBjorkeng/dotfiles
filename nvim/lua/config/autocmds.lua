@@ -27,13 +27,14 @@ vim.api.nvim_create_autocmd('BufReadPost', {
     end,
 })
 
--- Spellcheck in text-focused filetypes
+-- Spellcheck and soft wrapping in text-focused filetypes
 vim.api.nvim_create_autocmd('FileType', {
     group = group,
     pattern = { 'markdown', 'gitcommit', 'text' },
     callback = function()
         vim.opt_local.spell = true
-        vim.opt_local.spelllang = { 'en_gb' }
+        vim.opt_local.wrap = true
+        vim.opt_local.linebreak = true
     end,
 })
 
